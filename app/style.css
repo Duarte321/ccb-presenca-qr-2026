@@ -15,7 +15,7 @@
 .credential-notice{color:#b4e0ff;font-size:12px;margin:0;text-align:center}
 @media print{
 @page{size:A4;margin:12mm}
-body *{visibility:hidden!important}
+body:has(.credential-widget.printing) *{visibility:hidden!important}
 .credential-widget.printing,.credential-widget.printing .print-card,.credential-widget.printing .print-card *{visibility:visible!important}
 .credential-widget.printing{position:fixed;top:10mm;left:10mm;width:85mm!important;z-index:99999}
 .credential-widget.printing .print-card{border:1px solid #ccd4df;border-radius:5mm;box-shadow:none;background:#fff!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
