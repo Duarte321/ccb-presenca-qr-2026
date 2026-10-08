@@ -6,6 +6,11 @@ export default function Scanner({evento}:{evento:string}){
  const [resultado,setResultado]=useState<Resultado>({texto:'Aponte a câmera para o QR Code do participante.',tipo:'info'});
  const [total,setTotal]=useState(0);
  const ocupado=useRef(false);
+ const fila=useRef<string[]>([]);
+ const [pendentes,setPendentes]=useState(0);
+ const eventoRef=useRef(evento);
+ useEffect(()=>{eventoRef.current=evento;fila.current=[];setPendentes(0)},[evento]);
+ useEffect(()=>{let tentando=false;const retry=async()=>{if(tentando||!navigator.onLine||!fila.current.length)return;tentando=true;const itens=[...fila.current];for(const token of itens){try{const r=await fetch('/api/checkin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evento_id:eventoRef.current,token})});const j=await r.json();if(!r.ok)break;fila.current=fila.current.filter(v=>v!==token);setPendentes(fila.current.length);setResultado({texto:'Sincronização: '+j.message,tipo:j.message?.startsWith('Presença confirmada')?'ok':'aviso'});}catch{break}}tentando=false};window.addEventListener('online',retry);const interval=setInterval(retry,15000);return()=>{window.removeEventListener('online',retry);clearInterval(interval)}},[]);
  useEffect(()=>{
   let encerrado=false;
   const leitor=new Html5Qrcode('camera');
@@ -19,11 +24,11 @@ export default function Scanner({evento}:{evento:string}){
     const texto=body.message||'Não foi possível verificar o código.';
     const tipo:Resultado['tipo']=!resposta.ok?'erro':texto.startsWith('Presença confirmada:')?'ok':texto.startsWith('Presença já registrada:')?'aviso':'erro';
     if(!encerrado){setResultado({texto,tipo});if(tipo==='ok')setTotal(v=>v+1);}
-   }catch{if(!encerrado)setResultado({texto:'Sem conexão. A presença não foi confirmada; tente novamente.',tipo:'erro'});}
+   }catch{if(!encerrado){if(!fila.current.includes(token))fila.current.push(token);setPendentes(fila.current.length);setResultado({texto:'Sem conexão. Leitura pendente: mantenha esta página aberta até a sincronização. Nenhuma presença foi confirmada ainda.',tipo:'aviso'});}}
    finally{setTimeout(()=>{ocupado.current=false},2400);}
   };
   leitor.start({facingMode:'environment'},{fps:10,qrbox:{width:220,height:220}},registrar,()=>{}).catch(()=>{if(!encerrado)setResultado({texto:'Não foi possível abrir a câmera. Permita o acesso à câmera e utilize HTTPS.',tipo:'erro'});});
   return()=>{encerrado=true;void leitor.stop().then(()=>leitor.clear()).catch(()=>{});};
  },[evento]);
- return <div className="scanner-simple"><div className="camera-frame"><div id="camera"/></div><div className={'scan-result '+resultado.tipo} role="status" aria-live="polite"><strong>{resultado.tipo==='ok'?'✓ Entrada confirmada':resultado.tipo==='aviso'?'! Presença duplicada':resultado.tipo==='erro'?'× Atenção':'◉ Pronto para leitura'}</strong><p>{resultado.texto}</p></div><p className="status-note">Confirmações realizadas nesta sessão: <strong>{total}</strong>. Para consultar todas as presenças, atualize a página.</p></div>;
+ return <div className="scanner-simple"><div className="camera-frame"><div id="camera"/></div><div className={'scan-result '+resultado.tipo} role="status" aria-live="polite"><strong>{resultado.tipo==='ok'?'✓ Entrada confirmada':resultado.tipo==='aviso'?'! Presença duplicada':resultado.tipo==='erro'?'× Atenção':'◉ Pronto para leitura'}</strong><p>{resultado.texto}</p></div><p className="status-note">Confirmações realizadas nesta sessão: <strong>{total}</strong>. Leituras pendentes nesta aba: <strong>{pendentes}</strong>. Sem internet, mantenha a página aberta; fechar ou recarregar descarta leituras pendentes.</p></div>;
 }
