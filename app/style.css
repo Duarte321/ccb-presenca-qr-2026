@@ -23,3 +23,16 @@ body *{visibility:hidden!important}
 }
 
 .credential-actions{grid-template-columns:1fr 1fr}.credential-actions .whatsapp-button{background:#167546;color:#fff}.credential-actions .whatsapp-button:hover{background:#1b9659}
+
+
+.event-actions{margin-top:17px;padding-top:16px;border-top:1px solid #36506f;display:grid;gap:12px}
+.event-actions-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.event-actions-bar form{display:inline-flex;max-width:none;margin:0}
+.event-action{padding:10px 13px;border-radius:11px;font-size:13px;box-shadow:none}
+.event-action.edit{background:#2b4564;border:1px solid #557295}
+.event-action.finish{background:#116b61;border:1px solid #319487}
+.event-action.remove{background:#843341;border:1px solid #a65463}
+.event-action:disabled{opacity:.4;cursor:not-allowed}
+.event-edit-form,.event-delete-confirm{padding:15px;border-radius:12px;border:1px solid #41628a;background:#0e1f35;display:grid;gap:12px}
+.event-delete-confirm{border-color:#9a5961}
+.event-delete-confirm p{color:#f5c4c9;margin:0}
