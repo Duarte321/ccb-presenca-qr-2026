@@ -62,3 +62,94 @@ body:has(.batch-print) .batch-card small{color:#444}
 }
 
 .participant-unified{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:16px;align-items:start}.participant-unified>.management-head:first-child,.participant-unified>.event-edit-form,.participant-unified>.management-head:nth-child(3){grid-column:1}.participant-unified>.credential-widget{grid-column:2;grid-row:1/span 3}.participant-unified .credential-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}.participant-unified .credential-actions button{white-space:normal;min-height:44px}.participant-unified .credential-actions .print-button{grid-column:1/-1}@media(max-width:850px){.participant-unified{grid-template-columns:minmax(0,1fr)}.participant-unified>.credential-widget,.participant-unified>.management-head:first-child,.participant-unified>.event-edit-form,.participant-unified>.management-head:nth-child(3){grid-column:1;grid-row:auto}.participant-unified>.credential-widget{justify-self:center;width:100%;max-width:350px}}
+
+
+/* Layout responsivo: Android/Chrome, iOS/Safari, tablets e desktop */
+@media screen {
+ html{width:100%;overflow-x:clip;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+ body{min-width:0;width:100%;overflow-x:clip}
+ main{width:100%;min-width:0}
+ img,svg,video,canvas{max-width:100%}
+ .card,.tile,.scan-panel,.portaria-grid>*{min-width:0}
+ .topbar{min-width:0}
+ .topbar nav{min-width:0}
+ .grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,255px),1fr))}
+ .form-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,215px),1fr))}
+ .portaria-grid{grid-template-columns:minmax(260px,330px) minmax(0,1fr)}
+ .management-head>div{min-width:0;overflow-wrap:anywhere}
+ .management-actions{align-items:stretch}
+ .management-actions form{min-width:0}
+ .participant-unified{grid-template-columns:minmax(0,1fr) minmax(240px,315px)}
+ .participant-unified .credential-widget{max-width:315px;min-width:0;width:100%}
+ .credential-widget .print-card{max-width:100%}
+ .credential-actions{width:100%}
+ .credential-actions button,.event-actions button{overflow-wrap:anywhere}
+ .report-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .report-table-wrap table{min-width:640px}
+ .report-groups{grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr))}
+ .batch-options{grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr))}
+ .camera-frame{width:100%;max-width:100%}
+ .camera-frame video{max-width:100%!important}
+ button,input,select{touch-action:manipulation}
+ button:disabled{cursor:not-allowed}
+}
+@media screen and (max-width:1024px){
+ header.topbar{padding:14px 20px;gap:12px}
+ main{padding:28px 20px 72px}
+ .portaria-grid{grid-template-columns:minmax(235px,300px) minmax(0,1fr)}
+ .participant-unified{grid-template-columns:minmax(0,1fr) minmax(230px,290px)}
+}
+@media screen and (max-width:780px){
+ header.topbar{position:relative;display:flex;flex-direction:column;align-items:stretch;padding:12px 16px;gap:12px}
+ .brand{align-self:flex-start}
+ .topbar nav{display:flex;width:100%;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;gap:6px;padding:0 0 7px;scrollbar-width:thin;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+ .topbar nav a{flex:0 0 auto;white-space:nowrap;padding:10px 13px;font-size:13px;scroll-snap-align:start;background:#172b44;border:1px solid #294666}
+ main{padding:22px 14px 70px}
+ .portaria-grid{grid-template-columns:minmax(0,1fr)}
+ .participant-unified{grid-template-columns:minmax(0,1fr)!important;gap:14px}
+ .participant-unified>.management-head:first-child,
+ .participant-unified>.event-edit-form,
+ .participant-unified>.management-head:nth-child(3),
+ .participant-unified>.credential-widget{grid-column:1!important;grid-row:auto!important}
+ .participant-unified>.credential-widget{justify-self:center;width:100%;max-width:360px}
+ .grid{grid-template-columns:minmax(0,1fr)}
+ .report-head{align-items:stretch}
+ .report-head button{width:100%}
+ .report-groups{grid-template-columns:minmax(0,1fr)}
+ .manual-person{flex-wrap:wrap}
+ .manual-person button{flex:0 0 auto}
+}
+@media screen and (max-width:480px){
+ :root{color-scheme:dark}
+ main{padding:17px 12px calc(40px + env(safe-area-inset-bottom,0px))}
+ h1{font-size:clamp(26px,8vw,35px)}
+ h2{font-size:19px}
+ .card{padding:16px;border-radius:15px}
+ .brand-mark{width:39px;height:39px;border-radius:11px}
+ .brand strong{font-size:14px}
+ .brand small{font-size:10px}
+ input,select,textarea{font-size:16px;min-height:44px}
+ button{min-height:44px}
+ .management-head{align-items:stretch;flex-direction:column}
+ .management-head>button{width:100%}
+ .management-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .management-actions form,.management-actions button{width:100%}
+ .participant-unified .credential-actions{grid-template-columns:minmax(0,1fr)}
+ .participant-unified .credential-actions .print-button{grid-column:1}
+ .credential-widget{width:100%}
+ .credential-widget .print-card{width:100%}
+ .event-actions-bar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ .event-actions-bar form,.event-actions-bar button{width:100%}
+ .event-actions-bar form button{height:100%}
+ .event-link{overflow-wrap:anywhere}
+ .presence-item{gap:8px}
+ .presence-person{min-width:0}
+ .manual-person{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ .status-note{overflow-wrap:anywhere}
+ .batch-options{grid-template-columns:minmax(0,1fr)}
+ .report-table-wrap{margin-right:-6px}
+}
+@media screen and (max-width:350px){
+ .event-actions-bar,.management-actions{grid-template-columns:1fr}
+ .brand small{display:none}
+}
