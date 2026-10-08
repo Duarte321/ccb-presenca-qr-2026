@@ -1,0 +1,24 @@
+{
+  "name": "ccb-presenca-qr",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "@supabase/supabase-js": "2.97.0",
+    "@supabase/ssr": "0.8.0",
+    "html5-qrcode": "2.3.8",
+    "qrcode.react": "4.2.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "@types/react": "19.2.7",
+    "@types/node": "22.19.7"
+  }
+}
