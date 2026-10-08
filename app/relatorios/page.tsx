@@ -1,0 +1,20 @@
+import Link from 'next/link';import {serverDb} from '../../lib/supabase';import {redirect} from 'next/navigation';import Relatorio from '../../components/Relatorio';
+export default async function Relatorios({searchParams}:{searchParams:Promise<{evento?:string;participante?:string}>}){
+ const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ const {data:events}=await db.from('eventos').select('id,titulo,local,inicio,aberto').order('inicio',{ascending:false}).limit(100);
+ const query=await searchParams;const current=events?.find(e=>e.id===query.evento)||events?.[0];
+ const {data:rows}=current?await db.from('presencas').select('id,participante_id,registrado_em,participantes(nome,congregacao,categoria,instrumento,cargo_ministerio)').eq('evento_id',current.id).order('registrado_em',{ascending:true}).limit(3000):{data:[]};
+ const formatted=(rows||[]).map((r:any)=>({id:r.id,participante_id:r.participante_id,registrado_em:r.registrado_em,nome:r.participantes?.nome||'Não encontrado',congregacao:r.participantes?.congregacao||'—',categoria:r.participantes?.categoria||'Outro',instrumento:r.participantes?.instrumento||'',cargo_ministerio:r.participantes?.cargo_ministerio||''}));
+ const {data:pessoas}=await db.from('participantes').select('id,nome,congregacao').order('nome').limit(1000);
+ const chosen=(pessoas||[]).find(p=>p.id===query.participante);
+ const {data:historico}=chosen?await db.from('presencas').select('registrado_em,eventos(titulo,local,inicio)').eq('participante_id',chosen.id).order('registrado_em',{ascending:false}).limit(300):{data:[]};
+ const {data:op}=await db.from('operadores').select('perfil').eq('user_id',user.id).single();
+ const {data:logs}=['admin','secretaria'].includes(op?.perfil||'')?await db.from('auditoria_presencas').select('id,acao,ocorrido_em,detalhes').order('ocorrido_em',{ascending:false}).limit(60):{data:[]};
+ return <main><span className="eyebrow">RELATÓRIOS E HISTÓRICO</span><h1>Resumo musical</h1><p className="subtitle">Presenças confirmadas e distribuição musical por evento.</p>
+ <section className="report-event-links">{(events||[]).map(e=><Link href={'/relatorios?evento='+e.id} key={e.id} className={'event-link '+(current?.id===e.id?'selected':'')}>{e.titulo} • {e.local}</Link>)}</section>
+ {current?<Relatorio titulo={current.titulo} local={current.local} inicio={current.inicio} presencas={formatted}/>:<div className="empty">Crie um evento para gerar relatórios.</div>}
+ <section className="card"><h2>Histórico por participante</h2><form method="get" action="/relatorios"><select name="participante" defaultValue={query.participante||''}><option value="">Selecione participante</option>{(pessoas||[]).map(p=><option value={p.id} key={p.id}>{p.nome} — {p.congregacao}</option>)}</select>{current&&<input type="hidden" name="evento" value={current.id}/>}<button>Consultar histórico</button></form>
+ {chosen&&<><h3 style={{marginTop:20}}>{chosen.nome}</h3><p className="muted">{historico?.length||0} presença(s) exibida(s)</p><div className="presence-list">{(historico||[]).map((r:any,i:number)=><div className="presence-item" key={i}>{r.eventos?.titulo} — {r.eventos?.local} <small>{new Date(r.registrado_em).toLocaleString('pt-BR',{timeZone:'America/Cuiaba'})}</small></div>)}</div></>}</section>
+ {['admin','secretaria'].includes(op?.perfil||'')&&<section className="card"><h2>Registro de alterações</h2><p className="muted">Últimas entradas, remoções e alterações de credenciais. Os registros anteriores à ativação da auditoria não aparecem aqui.</p><div className="presence-list">{(logs||[]).map(l=><div className="presence-item" key={l.id}><strong>{l.acao.replaceAll('_',' ')}</strong><span>{new Date(l.ocorrido_em).toLocaleString('pt-BR',{timeZone:'America/Cuiaba'})}</span></div>)}</div></section>}
+ </main>;
+}
