@@ -1,0 +1,1 @@
+import './style.css';export default function Layout({children}:{children:React.ReactNode}){return <html lang="pt-BR"><body><header><strong>CCB Presença QR</strong><nav><a href="/">Painel</a><a href="/participantes">Participantes</a><a href="/eventos">Eventos</a><a href="/portaria">Portaria</a></nav></header><main>{children}</main></body></html>}
