@@ -153,3 +153,18 @@ body:has(.batch-print) .batch-card small{color:#444}
  .event-actions-bar,.management-actions{grid-template-columns:1fr}
  .brand small{display:none}
 }
+
+
+/* Navegação rápida e feedback visual durante carregamento */
+.topbar nav a{position:relative;display:inline-flex;align-items:center;gap:7px;transition:background .16s ease,color .16s ease,border-color .16s ease}
+.topbar nav a.nav-active,.topbar nav a[aria-current="page"]{color:#fff;background:#244e7b;border-radius:10px}
+.topbar nav a.nav-loading{color:#fff;background:#244467;border-radius:10px}
+.nav-spinner,.loading-wheel{display:inline-block;width:13px;height:13px;flex:0 0 13px;border:2px solid #92c5f78a;border-top-color:#fff;border-radius:50%;animation:nav-spin .65s linear infinite}
+@keyframes nav-spin{to{transform:rotate(360deg)}}
+.page-loading{display:flex;align-items:center;gap:15px;background:#172a43;border:1px solid #345372;border-radius:18px;padding:23px;margin-bottom:20px}
+.page-loading strong{font-size:18px}.page-loading p{margin:3px 0;color:#aabed8}
+.loading-wheel{width:28px;height:28px;flex-basis:28px;border-width:3px}
+.loading-skeleton{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px}
+.loading-skeleton>div{min-height:130px;border-radius:18px;background:linear-gradient(105deg,#15253a 20%,#233e60 42%,#15253a 65%);background-size:220% 100%;animation:loading-shimmer 1.5s ease-in-out infinite}
+@keyframes loading-shimmer{to{background-position-x:-220%}}
+@media(prefers-reduced-motion:reduce){.nav-spinner,.loading-wheel,.loading-skeleton>div{animation:none}}
