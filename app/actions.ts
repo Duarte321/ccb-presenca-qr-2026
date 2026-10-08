@@ -1,0 +1,5 @@
+'use server';import {revalidatePath} from 'next/cache';import {redirect} from 'next/navigation';import {serverDb} from '../lib/supabase';
+export async function login(f:FormData){const db=await serverDb();const {error}=await db.auth.signInWithPassword({email:String(f.get('email')||''),password:String(f.get('password')||'')});if(error)redirect('/login?erro=1');redirect('/');}
+export async function logout(){const db=await serverDb();await db.auth.signOut();redirect('/login')}
+export async function createPerson(f:FormData){const db=await serverDb();const {error}=await db.from('participantes').insert({nome:String(f.get('nome')||'').trim(),congregacao:String(f.get('congregacao')||'').trim(),categoria:String(f.get('categoria')||'Musico'),instrumento:String(f.get('instrumento')||'').trim()});if(error)throw Error(error.message);revalidatePath('/participantes')}
+export async function createEvent(f:FormData){const db=await serverDb();const {error}=await db.from('eventos').insert({titulo:String(f.get('titulo')||''),local:String(f.get('local')||''),inicio:String(f.get('inicio')||'')});if(error)throw Error(error.message);revalidatePath('/eventos')}
