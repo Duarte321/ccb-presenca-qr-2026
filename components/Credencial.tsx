@@ -2,8 +2,8 @@
 import {useRef,useState} from 'react';
 import {QRCodeCanvas} from 'qrcode.react';
 
-type Props={token:string;nome:string;congregacao:string;categoria:string;instrumento?:string|null};
-export default function Credencial({token,nome,congregacao,categoria,instrumento}:Props){
+type Props={token:string;nome:string;congregacao:string;categoria:string;instrumento?:string|null;cargoMinisterio?:string|null};
+export default function Credencial({token,nome,congregacao,categoria,instrumento,cargoMinisterio}:Props){
  const qrRef=useRef<HTMLDivElement>(null);
  const widgetRef=useRef<HTMLDivElement>(null);
  const [notice,setNotice]=useState('');
@@ -22,8 +22,9 @@ export default function Credencial({token,nome,congregacao,categoria,instrumento
   ctx.textAlign='center';ctx.fillStyle='#ffffff';ctx.font='bold 34px Arial';
   drawCenter(ctx,'CCB PRESENÇA QR',76);
   ctx.fillStyle='#102743';ctx.font='bold 29px Arial';drawCenter(ctx,nome,193);
-  ctx.font='21px Arial';drawCenter(ctx,congregacao,236);
-  ctx.font='20px Arial';drawCenter(ctx,[categoria,instrumento].filter(Boolean).join(' • '),278);
+  ctx.font='21px Arial';drawCenter(ctx,'Comum Congregação: '+congregacao,236);
+  ctx.font='20px Arial';drawCenter(ctx,'Cargo / Ministério: '+(cargoMinisterio||categoria),278);
+  ctx.font='19px Arial';drawCenter(ctx,instrumento?'Instrumento: '+instrumento:'',307);
   ctx.imageSmoothingEnabled=false;ctx.drawImage(original,155,320,490,490);
   ctx.fillStyle='#526477';ctx.font='20px Arial';
   drawCenter(ctx,'Apresente na portaria para registrar sua presença',861);
@@ -73,8 +74,8 @@ export default function Credencial({token,nome,congregacao,categoria,instrumento
  return <div className="credential-widget" ref={widgetRef}>
   <div className="print-card">
    <div className="print-card-title">CCB • PRESENÇA QR</div>
-   <strong>{nome}</strong><span>{congregacao}</span>
-   <span>{[categoria,instrumento].filter(Boolean).join(' • ')}</span>
+   <strong>{nome}</strong><span>Comum Congregação: {congregacao}</span>
+   <span>Cargo / Ministério: {cargoMinisterio||categoria}</span>{instrumento&&<span>Instrumento: {instrumento}</span>}
    <div className="qr-white" ref={qrRef}><QRCodeCanvas value={token} size={240} includeMargin level="H" style={{width:170,height:170}}/></div>
    <small>Credencial individual — uso nas reuniões musicais</small>
   </div>
