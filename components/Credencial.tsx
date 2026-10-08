@@ -4,6 +4,7 @@ import {QRCodeSVG} from 'qrcode.react';
 type Props={token:string;nome:string;congregacao:string;categoria:string;instrumento?:string|null};
 export default function Credencial({token,nome,congregacao,categoria,instrumento}:Props){
  const svgRef=useRef<HTMLDivElement>(null);
+ const widgetRef=useRef<HTMLDivElement>(null);
  const [notice,setNotice]=useState('');
  function svgMarkup(){return svgRef.current?.querySelector('svg')?.outerHTML||'';}
  function safeFileName(){return nome.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').toLowerCase();}
@@ -28,6 +29,6 @@ export default function Credencial({token,nome,congregacao,categoria,instrumento
   img.onerror=()=>{URL.revokeObjectURL(url);setNotice('Não foi possível carregar o QR Code.');};
   img.src=url;
  }
- function imprimir(){window.print();}
- return <div className="credential-widget"><div className="print-card"><div className="print-card-title">CCB • PRESENÇA QR</div><strong>{nome}</strong><span>{congregacao}</span><span>{[categoria,instrumento].filter(Boolean).join(' • ')}</span><div className="qr-white" ref={svgRef}><QRCodeSVG value={token} size={170} includeMargin level="H"/></div><small>Credencial individual — uso nas reuniões musicais</small></div><div className="credential-actions"><button type="button" onClick={baixar}>↓ Baixar QR (PNG)</button><button type="button" className="print-button" onClick={imprimir}>▤ Imprimir cartão</button></div>{notice&&<p className="credential-notice" role="status">{notice}</p>}</div>;
+ function imprimir(){const el=widgetRef.current;if(!el)return;el.classList.add('printing');const reset=()=>{el.classList.remove('printing');window.removeEventListener('afterprint',reset)};window.addEventListener('afterprint',reset);window.print();}
+ return <div className="credential-widget" ref={widgetRef}><div className="print-card"><div className="print-card-title">CCB • PRESENÇA QR</div><strong>{nome}</strong><span>{congregacao}</span><span>{[categoria,instrumento].filter(Boolean).join(' • ')}</span><div className="qr-white" ref={svgRef}><QRCodeSVG value={token} size={170} includeMargin level="H"/></div><small>Credencial individual — uso nas reuniões musicais</small></div><div className="credential-actions"><button type="button" onClick={baixar}>↓ Baixar QR (PNG)</button><button type="button" className="print-button" onClick={imprimir}>▤ Imprimir cartão</button></div>{notice&&<p className="credential-notice" role="status">{notice}</p>}</div>;
 }
