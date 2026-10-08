@@ -44,3 +44,13 @@ export async function excluirEvento(f:FormData){
  if(error||!data?.length)throw new Error(error?.message||'Não foi possível excluir o evento.');
  revalidatePath('/eventos');revalidatePath('/portaria');
 }
+
+export async function removerPresenca(f:FormData){
+ const db=await exigirGestor();
+ const id=String(f.get('presenca_id')||'');
+ const evento=String(f.get('evento_id')||'');
+ if(!/^[0-9a-f-]{36}$/i.test(id)||!/^[0-9a-f-]{36}$/i.test(evento))throw new Error('Registro inválido.');
+ const {data,error}=await db.from('presencas').delete().eq('id',id).eq('evento_id',evento).select('id');
+ if(error||!data?.length)throw new Error(error?.message||'Presença não encontrada.');
+ revalidatePath('/portaria');revalidatePath('/eventos');revalidatePath('/');
+}
