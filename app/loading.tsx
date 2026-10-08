@@ -1,0 +1,1 @@
+export default function Loading(){return <main aria-busy="true" aria-live="polite"><div className="page-loading"><span className="loading-wheel" aria-hidden="true"/><div><strong>Abrindo página…</strong><p>Buscando informações do sistema.</p></div></div><section className="loading-skeleton" aria-hidden="true"><div/><div/><div/></section></main>}
