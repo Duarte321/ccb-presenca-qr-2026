@@ -17,7 +17,7 @@ function idEvento(f:FormData){const id=String(f.get('id')||'');if(!/^[0-9a-f-]{3
 export async function editarEvento(f:FormData){
  const db=await exigirGestor();const id=idEvento(f);
  const titulo=String(f.get('titulo')||'').trim();const local=String(f.get('local')||'').trim();const inicio=String(f.get('inicio')||'');
- const date=new Date(inicio);
+ const date=new Date(inicio.endsWith('Z')||/[+-]\d{2}:\d{2}$/.test(inicio)?inicio:inicio+'-04:00');
  if(!titulo||!local||!Number.isFinite(date.getTime()))throw new Error('Preencha corretamente os dados do evento.');
  const {data,error}=await db.from('eventos').update({titulo,local,inicio:date.toISOString()}).eq('id',id).select('id');
  if(error||!data?.length)throw new Error(error?.message||'Não foi possível editar o evento.');
