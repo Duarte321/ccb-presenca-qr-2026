@@ -21,3 +21,5 @@ body *{visibility:hidden!important}
 .credential-widget.printing .print-card{border:1px solid #ccd4df;border-radius:5mm;box-shadow:none;background:#fff!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
 .credential-widget.printing .credential-actions,.credential-widget.printing .credential-notice{display:none}
 }
+
+.credential-actions{grid-template-columns:1fr 1fr}.credential-actions .whatsapp-button{background:#167546;color:#fff}.credential-actions .whatsapp-button:hover{background:#1b9659}
