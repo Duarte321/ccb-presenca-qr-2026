@@ -1,0 +1,2 @@
+'use client';import {useEffect} from 'react';import {useRouter} from 'next/navigation';
+export default function Atualizador(){const router=useRouter();useEffect(()=>{const id=setInterval(()=>{if(document.visibilityState==='visible'&&navigator.onLine)router.refresh()},12000);return()=>clearInterval(id)},[router]);return <small className="muted">Lista sincronizada automaticamente a cada 12 segundos enquanto a página estiver aberta.</small>}
