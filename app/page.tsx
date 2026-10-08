@@ -1,0 +1,1 @@
+import {serverDb} from '../lib/supabase';import {redirect} from 'next/navigation';export default async function Home(){const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');return <main><h1>CCB Presença QR</h1><p>Painel inicial</p><p>Selecione Participantes, Eventos ou Portaria no menu.</p></main>}
