@@ -1,0 +1,1 @@
+import {login} from '../actions';export default function Login(){return <section className="card"><h1>Entrar no sistema</h1><form action={login}><input name="email" type="email" required placeholder="Email"/><input name="password" type="password" required placeholder="Senha"/><button>Entrar</button></form></section>}
