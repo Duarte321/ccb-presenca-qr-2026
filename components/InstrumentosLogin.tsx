@@ -22,5 +22,5 @@ export default function InstrumentosLogin({foco}:{foco:'email'|'senha'|null}){
  const [p,setP]=useState({x:0,y:0});
  useEffect(()=>{const move=(e:PointerEvent)=>{if(e.pointerType==='touch')return;setP({x:Math.max(-4,Math.min(4,(e.clientX/window.innerWidth-.5)*8)),y:Math.max(-4,Math.min(4,(e.clientY/window.innerHeight-.5)*8))})};window.addEventListener('pointermove',move,{passive:true});return()=>window.removeEventListener('pointermove',move)},[]);
  const x=foco==='email'?3:p.x,y=foco==='email'?3:p.y;
- return <aside className="login-orchestra"><div className="orchestra-heading"><span className="eyebrow">MÚSICA E TECNOLOGIA</span><h2>Bem-vindo à nossa orquestra!</h2><p>{foco==='senha'?'Olhinhos fechados para proteger sua senha.':foco==='email'?'Todos atentos ao seu e-mail!':'Seus instrumentos estão de olho por aqui.'}</p></div><div className="instrument-grid">{items.map(i=><Instrumento key={i.kind} {...i} closed={foco==='senha'} x={x} y={y}/>)}</div></aside>;
+ return <aside className="login-orchestra" aria-label="Instrumentos musicais animados"><div className="instrument-grid">{items.map(i=><Instrumento key={i.kind} {...i} closed={foco==='senha'} x={x} y={y}/>)}</div></aside>;
 }
