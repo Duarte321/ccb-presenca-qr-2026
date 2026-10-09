@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect,useState} from 'react';
-const paginas=[['/','Painel'],['/participantes','Participantes'],['/eventos','Eventos'],['/portaria','Portaria'],['/relatorios','Relatórios'],['/usuarios','Usuários']] as const;
+const paginas=[['/','Painel'],['/participantes','Participantes'],['/eventos','Eventos'],['/portaria','Portaria'],['/relatorios','Relatórios'],['/usuarios','Usuários'],['/minha-conta','Minha conta']] as const;
 export default function Navegacao(){
  const pathname=usePathname();
  const [destino,setDestino]=useState<string|null>(null);
