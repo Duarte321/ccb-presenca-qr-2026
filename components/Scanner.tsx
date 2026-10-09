@@ -27,8 +27,21 @@ export default function Scanner({evento}:{evento:string}){
    }catch{if(!encerrado){if(!fila.current.includes(token))fila.current.push(token);setPendentes(fila.current.length);setResultado({texto:'Sem conexão. Leitura pendente: mantenha esta página aberta até a sincronização. Nenhuma presença foi confirmada ainda.',tipo:'aviso'});}}
    finally{setTimeout(()=>{ocupado.current=false},2400);}
   };
-  leitor.start({facingMode:'environment'},{fps:10,qrbox:{width:220,height:220}},registrar,()=>{}).catch(()=>{if(!encerrado)setResultado({texto:'Não foi possível abrir a câmera. Permita o acesso à câmera e utilize HTTPS.',tipo:'erro'});});
-  return()=>{encerrado=true;void leitor.stop().then(()=>leitor.clear()).catch(()=>{});};
+  // Start é assíncrono: aguarde sua conclusão antes de tentar parar o leitor.
+  // Navegar entre páginas durante a inicialização nunca deve gerar rejeição não tratada.
+  const inicio=leitor.start({facingMode:'environment'},{fps:10,qrbox:{width:220,height:220}},registrar,()=>{})
+   .then(()=>true)
+   .catch(()=>{
+    if(!encerrado)setResultado({texto:'Não foi possível abrir a câmera. Permita o acesso à câmera e utilize HTTPS.',tipo:'erro'});
+    return false;
+   });
+  return()=>{
+   encerrado=true;
+   void inicio.then(async(iniciado)=>{
+    if(iniciado){try{await leitor.stop()}catch{/* Leitor já foi interrompido. */}}
+    try{leitor.clear()}catch{/* Elemento removido ao navegar. */}
+   }).catch(()=>{});
+  };
  },[evento]);
  return <div className="scanner-simple"><div className="camera-frame"><div id="camera"/></div><div className={'scan-result '+resultado.tipo} role="status" aria-live="polite"><strong>{resultado.tipo==='ok'?'✓ Entrada confirmada':resultado.tipo==='aviso'?'! Presença duplicada':resultado.tipo==='erro'?'× Atenção':'◉ Pronto para leitura'}</strong><p>{resultado.texto}</p></div><p className="status-note">Confirmações realizadas nesta sessão: <strong>{total}</strong>. Leituras pendentes nesta aba: <strong>{pendentes}</strong>. Sem internet, mantenha a página aberta; fechar ou recarregar descarta leituras pendentes.</p></div>;
 }
