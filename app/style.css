@@ -267,3 +267,14 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
  .login-orchestra .instrument-friend{flex-basis:68px;width:68px;margin-inline:-6px}
  .login-orchestra .instrument-friend svg{max-width:68px}
 }
+
+/* Login padrão, sem animações: apresentação centralizada e responsiva */
+.login-shell.login-simple{display:grid;place-items:center;width:100%;max-width:100%;min-height:calc(100dvh - 90px);padding:clamp(18px,4vw,38px) 14px 48px}
+.login-simple .login-card{width:min(100%,440px);padding:clamp(24px,4vw,40px);border-radius:23px;margin:0;box-shadow:0 20px 65px rgba(0,0,0,.3);border:1px solid #38577e}
+.login-simple .login-card h1{font-size:clamp(27px,6vw,38px)}
+.login-simple .login-card>p:not(.login-error){margin-bottom:25px}
+.login-simple .login-card label{font-size:14px}
+.login-simple .login-card input{min-height:49px;font-size:16px}
+.login-simple .login-card button{width:100%;min-height:49px;margin-top:7px}
+.login-simple .login-card .login-icon{margin-bottom:17px}
+@media screen and (max-width:480px){.login-shell.login-simple{padding:18px 12px calc(30px + env(safe-area-inset-bottom,0px))}.login-simple .login-card{padding:25px 20px;border-radius:18px}}
