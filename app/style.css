@@ -182,3 +182,5 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 
 /* Minha conta */
 .account-card{max-width:600px}.password-form{display:grid;gap:16px;margin-top:18px}.password-form label{display:grid;gap:6px}.password-form input{width:100%}.password-form button{min-height:46px}@media(max-width:520px){.account-card{max-width:100%}.password-form button{width:100%}}
+
+.login-error{color:#ffd8dc!important;background:#541c29;border:1px solid #f47c8d;border-radius:12px;padding:12px 14px;font-weight:700;margin:14px 0;line-height:1.5}
