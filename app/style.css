@@ -176,3 +176,6 @@ body:has(.batch-print) .batch-card small{color:#444}
 
 /* Encerrar sessão em todas as páginas, fixo no topo */
 .global-logout-form{margin:0;flex:0 0 auto}.global-logout-form .logout-portaria{white-space:nowrap;padding:10px 15px}.topbar{flex-wrap:wrap}.topbar nav{flex:1 1 auto;justify-content:center}body:has(.login-shell) .global-logout-form{display:none}@media screen and (max-width:780px){header.topbar{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}.topbar .brand{grid-column:1;grid-row:1;min-width:0}.topbar nav{grid-column:1/-1;grid-row:2;justify-content:flex-start;min-width:0}.global-logout-form{grid-column:2;grid-row:1}.global-logout-form .logout-portaria{padding:9px 12px;font-size:12px;min-height:40px}}
+
+/* Login sem menu de áreas restritas */
+body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{display:none!important}body:has(.login-shell) .topbar{justify-content:center}body:has(.login-shell) .topbar .brand{justify-self:center} .user-create-submit{display:flex;align-items:end}.user-create-submit button{width:100%;min-height:44px}@media(max-width:780px){body:has(.login-shell) .topbar{display:flex;justify-content:center}body:has(.login-shell) .brand{align-self:center}}
