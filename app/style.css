@@ -246,3 +246,24 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
  .login-orchestra .instrument-friend svg{max-width:59px}
  .login-experience{gap:8px}
 }
+
+/* Instrumentos agrupados, sem intervalos excessivos no login */
+@media screen {
+ .login-orchestra .instrument-grid{display:flex;justify-content:center;align-items:flex-end;gap:0!important;width:max-content;max-width:100%;margin-inline:auto}
+ .login-orchestra .instrument-friend{flex:0 1 105px;min-width:0;width:105px;margin-inline:-8px}
+ .login-orchestra .instrument-friend:first-child{margin-left:0}
+ .login-orchestra .instrument-friend:last-child{margin-right:0}
+ .login-orchestra .instrument-friend svg{width:100%;max-width:105px}
+}
+@media screen and (max-width:900px){
+ .login-orchestra .instrument-friend{flex-basis:87px;width:87px;margin-inline:-7px}
+ .login-orchestra .instrument-friend svg{max-width:87px}
+}
+@media screen and (max-width:520px){
+ .login-orchestra .instrument-friend{flex-basis:clamp(65px,21vw,82px);width:clamp(65px,21vw,82px);margin-inline:-7px}
+ .login-orchestra .instrument-friend svg{max-width:82px}
+}
+@media screen and (max-width:360px){
+ .login-orchestra .instrument-friend{flex-basis:68px;width:68px;margin-inline:-6px}
+ .login-orchestra .instrument-friend svg{max-width:68px}
+}
