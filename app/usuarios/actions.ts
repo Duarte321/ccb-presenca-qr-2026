@@ -12,7 +12,7 @@ async function admin(){
 export async function mudarPerfil(f:FormData){
  const {db}=await admin();
  const id=String(f.get('user_id')||'');const perfil=String(f.get('perfil')||'');
- if(!/^[a-f0-9-]{36}$/i.test(id)||!['admin','secretaria','consulta','bloqueado'].includes(perfil))throw Error('Dados inválidos.');
+ if(!/^[a-f0-9-]{36}$/i.test(id)||!['admin','secretaria','porteiro','consulta','bloqueado'].includes(perfil))throw Error('Dados inválidos.');
  const {error}=await db.rpc('definir_perfil_usuario',{p_usuario:id,p_perfil:perfil});
  if(error)throw Error(error.message);
  revalidatePath('/usuarios');
