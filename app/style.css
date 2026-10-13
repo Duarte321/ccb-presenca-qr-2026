@@ -306,3 +306,6 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 
 /* Desktop: impede que o estilo genérico .topbar nav exiba a barra mobile */
 @media (min-width:821px){header.topbar nav.mobile-bottom-nav{display:none!important}header.topbar .mobile-more-panel,header.topbar .mobile-menu-backdrop{display:none!important}}
+
+/* Filtro por grupo na lista de participantes */
+.participant-filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:14px;align-items:end;margin:15px 0 8px}.participant-filters .filter-label{min-width:0}.participant-filters select{min-height:48px}@media(max-width:620px){.participant-filters{grid-template-columns:minmax(0,1fr);gap:10px}}
