@@ -309,3 +309,7 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 
 /* Filtro por grupo na lista de participantes */
 .participant-filters{display:grid;grid-template-columns:minmax(0,2fr) minmax(180px,1fr);gap:14px;align-items:end;margin:15px 0 8px}.participant-filters .filter-label{min-width:0}.participant-filters select{min-height:48px}@media(max-width:620px){.participant-filters{grid-template-columns:minmax(0,1fr);gap:10px}}
+
+/* Pesquisa + filtros independentes de cargo e congregação */
+@media(min-width:821px){.participant-filters{grid-template-columns:minmax(180px,1.5fr) minmax(145px,1fr) minmax(170px,1fr)}}
+@media(min-width:621px) and (max-width:820px){.participant-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.participant-filters .filter-label:first-child{grid-column:1/-1}}
