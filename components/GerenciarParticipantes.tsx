@@ -3,19 +3,24 @@ import {useMemo,useState} from 'react';
 import {editarParticipante,alterarCredencial} from '../app/advanced-actions';import Credencial from './Credencial';
 type Pessoa={id:string;nome:string;congregacao:string;categoria:string;instrumento:string|null;cargo_ministerio:string|null;credenciais_qr:{token:string;ativo:boolean}[]};
 export default function GerenciarParticipantes({pessoas}:{pessoas:Pessoa[]}){
- const [busca,setBusca]=useState('');const [grupo,setGrupo]=useState('todos');const [editando,setEditando]=useState<string|null>(null);
- const classificacao=(p:Pessoa)=>{
-  const categoria=p.categoria.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-  if(p.cargo_ministerio?.trim()||['instrutor','ministerio'].includes(categoria))return 'ministerio';
-  if(categoria==='organista')return 'organistas';
-  if(categoria==='musico')return 'musicos';
-  return 'outros';
- };
+ const [busca,setBusca]=useState('');
+ const [cargo,setCargo]=useState('todos');
+ const [congregacao,setCongregacao]=useState('todas');
+ const [editando,setEditando]=useState<string|null>(null);
+ const normalizar=(valor:string)=>valor.trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('pt-BR');
+ const cargos=useMemo(()=>[...new Set(pessoas.map(p=>p.cargo_ministerio?.trim()||'').filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')),[pessoas]);
+ const congregacoes=useMemo(()=>[...new Set(pessoas.map(p=>p.congregacao?.trim()||'').filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')),[pessoas]);
  const filtradas=useMemo(()=>pessoas.filter(p=>
- (grupo==='todos'||classificacao(p)===grupo)&&
- [p.nome,p.congregacao,p.categoria,p.instrumento,p.cargo_ministerio].join(' ').toLowerCase().includes(busca.trim().toLowerCase())
- ),[pessoas,busca,grupo]);
- return <><div className="participant-filters"><label className="filter-label">Buscar participante<input value={busca} onChange={e=>setBusca(e.target.value)} placeholder="Nome, congregação, instrumento ou cargo" /></label><label className="filter-label">Filtrar por grupo<select value={grupo} onChange={e=>setGrupo(e.target.value)}><option value="todos">Todos os participantes</option><option value="ministerio">Ministério</option><option value="musicos">Músicos</option><option value="organistas">Organistas</option><option value="outros">Outros / Aprendizes</option></select></label></div><p className="muted" role="status">{filtradas.length} de {pessoas.length} participante(s) exibidos</p>
+ (cargo==='todos'||normalizar(p.cargo_ministerio||'')===normalizar(cargo))&&
+ (congregacao==='todas'||normalizar(p.congregacao)===normalizar(congregacao))&&
+ [p.nome,p.congregacao,p.categoria,p.instrumento,p.cargo_ministerio].join(' ').toLocaleLowerCase('pt-BR').includes(busca.trim().toLocaleLowerCase('pt-BR'))
+ ),[pessoas,busca,cargo,congregacao]);
+ return <><div className="participant-filters">
+ <label className="filter-label">Buscar participante<input value={busca} onChange={e=>setBusca(e.target.value)} placeholder="Nome, congregação, instrumento ou cargo" /></label>
+ <label className="filter-label">Cargo / Ministério<select value={cargo} onChange={e=>setCargo(e.target.value)}><option value="todos">Todos os cargos</option>{cargos.map(item=><option key={item} value={item}>{item}</option>)}</select></label>
+ <label className="filter-label">Congregação<select value={congregacao} onChange={e=>setCongregacao(e.target.value)}><option value="todas">Todas as congregações</option>{congregacoes.map(item=><option key={item} value={item}>{item}</option>)}</select></label>
+ </div><p className="muted" role="status">{filtradas.length} de {pessoas.length} participante(s) exibidos</p>
+
  {filtradas.map(p=><div key={p.id} className="card participant-unified" style={{padding:16}}>
  <div className="management-head"><div><strong>{p.nome}</strong><p className="muted">Comum: {p.congregacao} • {p.cargo_ministerio||p.categoria} • {p.instrumento||'Sem instrumento'}</p></div>
  <button type="button" onClick={()=>setEditando(editando===p.id?null:p.id)}>{editando===p.id?'Fechar':'Editar cadastro'}</button></div>
