@@ -1,6 +1,6 @@
 'use server';
 import {revalidatePath} from 'next/cache';
-import {serverDb} from '../../../lib/supabase';
+import {serverDb} from '../../../../lib/supabase';
 export async function salvarEsperados(form:FormData){
  const evento=String(form.get('evento')||'');
  const ids=[...new Set(form.getAll('participantes').map(String))];
