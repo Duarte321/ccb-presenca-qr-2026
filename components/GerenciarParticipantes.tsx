@@ -1,5 +1,5 @@
-import Link from 'next/link';
 'use client';
+import Link from 'next/link';
 import {useMemo,useState} from 'react';
 import {editarParticipante,alterarCredencial} from '../app/advanced-actions';import Credencial from './Credencial';
 type Pessoa={id:string;nome:string;congregacao:string;categoria:string;instrumento:string|null;cargo_ministerio:string|null;credenciais_qr:{token:string;ativo:boolean}[]};
