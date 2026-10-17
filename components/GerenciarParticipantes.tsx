@@ -1,3 +1,4 @@
+import Link from 'next/link';
 'use client';
 import {useMemo,useState} from 'react';
 import {editarParticipante,alterarCredencial} from '../app/advanced-actions';import Credencial from './Credencial';
@@ -23,7 +24,7 @@ export default function GerenciarParticipantes({pessoas}:{pessoas:Pessoa[]}){
 
  {filtradas.map(p=><div key={p.id} className="card participant-unified" style={{padding:16}}>
  <div className="management-head"><div><strong>{p.nome}</strong><p className="muted">Comum: {p.congregacao} • {p.cargo_ministerio||p.categoria} • {p.instrumento||'Sem instrumento'}</p></div>
- <button type="button" onClick={()=>setEditando(editando===p.id?null:p.id)}>{editando===p.id?'Fechar':'Editar cadastro'}</button></div>
+ <div className="management-actions"><Link href={'/participantes/'+p.id+'/historico'} className="action-link secondary">Histórico de presença</Link><button type="button" onClick={()=>setEditando(editando===p.id?null:p.id)}>{editando===p.id?'Fechar':'Editar cadastro'}</button></div></div>
  {editando===p.id&&<form action={editarParticipante} className="event-edit-form">
  <input type="hidden" name="id" value={p.id}/>
  <div className="form-grid"><label>Nome<input name="nome" required defaultValue={p.nome}/></label>
