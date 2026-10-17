@@ -313,3 +313,6 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 /* Pesquisa + filtros independentes de cargo e congregação */
 @media(min-width:821px){.participant-filters{grid-template-columns:minmax(180px,1.5fr) minmax(145px,1fr) minmax(170px,1fr)}}
 @media(min-width:621px) and (max-width:820px){.participant-filters{grid-template-columns:repeat(2,minmax(0,1fr))}.participant-filters .filter-label:first-child{grid-column:1/-1}}
+
+/* Lista de participantes esperados: seleção acessível em celulares */
+.expected-form{display:grid;gap:15px}.expected-list{display:grid;gap:8px;max-height:60vh;overflow:auto;overscroll-behavior:contain}.expected-item{display:flex;align-items:center;gap:12px;border:1px solid #345373;border-radius:12px;padding:11px;background:#142943;cursor:pointer}.expected-item input[type=checkbox]{width:20px;height:20px;min-width:20px;accent-color:#55aaff}.expected-item span{display:grid;gap:2px}.expected-item small{color:#aac4e2;font-size:12px}.expected-form>.management-actions{display:flex;gap:9px;flex-wrap:wrap}@media(max-width:600px){.expected-list{max-height:50vh}.expected-form>button{width:100%}}
