@@ -1,6 +1,6 @@
 'use client';
 import {useMemo,useState} from 'react';
-type Evento={id:string;titulo:string;local:string;inicio:string};
+type Evento={id:string;titulo:string;local:string;inicio:string;aberto:boolean};
 type Pessoa={id:string;nome:string;congregacao:string;categoria:string;cargo_ministerio:string|null};
 type Registro={evento_id:string;participante_id:string};
 export default function RelatorioGeral({eventos,pessoas,presencas,esperados}:{eventos:Evento[];pessoas:Pessoa[];presencas:Registro[];esperados:Registro[]}){
@@ -11,7 +11,7 @@ export default function RelatorioGeral({eventos,pessoas,presencas,esperados}:{ev
  const ids=new Set(selecionados);
  const confirmadas=useMemo(()=>new Set(presencas.filter(p=>ids.has(p.evento_id)).map(p=>p.evento_id+'|'+p.participante_id)),[presencas,selecionados]);
  const previstas=useMemo(()=>new Set(esperados.filter(p=>ids.has(p.evento_id)).map(p=>p.evento_id+'|'+p.participante_id)),[esperados,selecionados]);
- const finalizados=new Set(eventos.filter(e=>!('aberto' in e)||!(e as Evento&{aberto:boolean}).aberto).map(e=>e.id));
+ const finalizados=new Set(eventos.filter(e=>!e.aberto).map(e=>e.id));
  const linhas=useMemo(()=>pessoas.filter(p=>(!comum||p.congregacao===comum)&&(!cargo||p.cargo_ministerio===cargo)&&[p.nome,p.congregacao,p.cargo_ministerio,p.categoria].join(' ').toLocaleLowerCase('pt-BR').includes(busca.toLocaleLowerCase('pt-BR'))).map(p=>{
   const presenca=selecionados.filter(id=>confirmadas.has(id+'|'+p.id)).length;
   const previsto=selecionados.filter(id=>finalizados.has(id)&&previstas.has(id+'|'+p.id));
