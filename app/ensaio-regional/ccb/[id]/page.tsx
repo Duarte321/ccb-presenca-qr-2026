@@ -4,6 +4,8 @@ import {salvarFormularioCCB} from '../../actions';
 import RegionalPrintButton from '../../../../components/RegionalPrintButton';
 import CcbFolhaOriginal from '../../../../components/CcbFolhaOriginal';
 export const dynamic='force-dynamic';
+type Contagem={grupo:string;tipo:string;valor:string;quantidade:number};
+type Valores={anciao:string;encarregado_regional:string;ministerio:Record<string,number>};
 const ministerio=["Anciães","Diáconos","Cooperadores Oficiais","Cooperadores de Jovens e Menores","Encarregados Regionais","Examinadora","Encarregados Locais","Instrutores","Professoras","Irmãos do Dpto Musical","Irmãos/Irmãs Colaboradores (Libras, Porta, Som, Pátio, etc)"];
 export default async function FormularioCCB({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
