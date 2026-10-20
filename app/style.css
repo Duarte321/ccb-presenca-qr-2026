@@ -370,3 +370,13 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
  body:has(.regional-print) .regional-print h2,body:has(.regional-print) .regional-print h3,body:has(.regional-print) .regional-print p,body:has(.regional-print) .regional-print td,body:has(.regional-print) .regional-print th{color:black!important}
  body:has(.regional-print) .regional-print tr{break-inside:avoid}
 }
+
+/* Zerar apenas os lançamentos do Ensaio Regional selecionado */
+.regional-reset-panel{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:15px;padding:17px;border:1px solid #9c5960;border-radius:14px;background:rgba(130,37,47,.13)}
+.regional-reset-panel>div:first-child{flex:1;min-width:220px}
+.regional-reset-panel strong{color:#ffdddd}
+.regional-reset-panel p{margin:7px 0 0}
+.regional-danger-button{background:#9a2937;color:#fff;border:1px solid #d95b67;border-radius:10px;padding:12px 15px;min-height:44px;box-shadow:none}
+.regional-danger-button:disabled{opacity:.5;cursor:not-allowed}
+.regional-reset-confirm{display:flex;align-items:center;gap:9px;flex-wrap:wrap;width:100%}
+.regional-reset-confirm p{width:100%;color:#ffe3e4}
