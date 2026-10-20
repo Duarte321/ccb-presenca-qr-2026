@@ -356,3 +356,17 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 .regional-settings{display:grid;gap:14px}.regional-config-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.regional-config-grid label{min-width:0}
 .regional-settings-info{background:#132a46;border:1px solid #355777;border-radius:13px;padding:13px 15px}.regional-settings-info p{margin:7px 0 0;color:#bbd1ed;font-size:13px}
 @media(max-width:750px){.regional-shortcuts,.regional-config-grid{grid-template-columns:1fr}.regional-hero{padding:19px 17px}.regional-hero .regional-settings-button{width:100%}.regional-shortcuts>button{min-height:78px}.regional-shortcut-icon{min-width:45px;height:45px}}
+
+/* Ensaio Regional funcional — impressão e layout de edição */
+.regional-select{max-width:520px}.regional-select label{display:block}.regional-config-grid>button{align-self:end}.regional-history .regional-log small{display:inline-block;margin-left:8px;color:#9db9d7}
+.regional-print table{width:100%;border-collapse:collapse;margin:9px 0 18px}.regional-print th,.regional-print td{padding:9px;border-bottom:1px solid #405a73;text-align:left}.regional-print td:last-child,.regional-print th:last-child{text-align:right}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ body:has(.regional-print) .topbar,body:has(.regional-print) main>.eyebrow,body:has(.regional-print) main>h1,body:has(.regional-print) main>.subtitle,
+ body:has(.regional-print) .regional> :not(.regional-print){display:none!important}
+ body:has(.regional-print) main{max-width:none!important;margin:0!important;padding:0!important}
+ body:has(.regional-print) .regional-print{display:block!important;border:0!important;box-shadow:none!important;padding:0!important;background:white!important;color:black!important}
+ body:has(.regional-print) .regional-print button{display:none!important}
+ body:has(.regional-print) .regional-print h2,body:has(.regional-print) .regional-print h3,body:has(.regional-print) .regional-print p,body:has(.regional-print) .regional-print td,body:has(.regional-print) .regional-print th{color:black!important}
+ body:has(.regional-print) .regional-print tr{break-inside:avoid}
+}
