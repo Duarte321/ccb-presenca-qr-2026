@@ -21,7 +21,7 @@ export async function editarRegional(form:FormData){
 export async function registrarRegional(id:string,grupo:string,tipo:string,valor:string,delta:number){
  const {db}=await auth();
  if(!uuid.test(id)||!['musicos','organistas'].includes(grupo)||!['cidade','instrumento','nivel'].includes(tipo)||![1,-1].includes(delta))throw Error('Contagem inválida.');
- const {error}=await db.rpc('regional_registrar',{p_ensaio:id,p_grupo:grupo,p_tipo:tipo,p_valor:valor,p_delta:delta});
+ const {data,error}=await db.rpc('regional_registrar_rapido',{p_ensaio:id,p_grupo:grupo,p_tipo:tipo,p_valor:valor,p_delta:delta});
  if(error)throw Error(error.message);
- return {ok:true};
+ return {id:String(data)};
 }
