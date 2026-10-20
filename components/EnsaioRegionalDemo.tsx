@@ -37,7 +37,7 @@ export default function EnsaioRegionalDemo(){
  <button type="button" className={tela==='musicos'?'active':''} onClick={()=>setTela('musicos')}>Contagem Músicos</button>
  <button type="button" className={tela==='organistas'?'active':''} onClick={()=>setTela('organistas')}>Contagem Organistas</button>
  </div>
- <div className="regional-notice"><strong>Modo demonstração:</strong></strong> os botões permitem simular lançamentos somente nesta tela. As contagens ainda não são salvas no Supabase nem compartilhadas em tempo real entre celulares.</div>
+ <div className="regional-notice"><strong>Modo demonstração:</strong> os botões permitem simular lançamentos somente nesta tela. As contagens ainda não são salvas no Supabase nem compartilhadas em tempo real entre celulares.</div>
  {tela==='painel'?<><div className="regional-stats">
  {[['Músicos por cidade',totais.mc],['Músicos por instrumento',totais.mi],['Organistas por cidade',totais.oc],['Organistas por nível',totais.on]].map(([nome,total])=><div className="card regional-stat" key={nome}><span>{nome}</span><strong>{total}</strong></div>)}
  </div>
