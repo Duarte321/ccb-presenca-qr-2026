@@ -380,3 +380,13 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 .regional-danger-button:disabled{opacity:.5;cursor:not-allowed}
 .regional-reset-confirm{display:flex;align-items:center;gap:9px;flex-wrap:wrap;width:100%}
 .regional-reset-confirm p{width:100%;color:#ffe3e4}
+
+/* Contagem rápida no celular e edição direta de instrumentos */
+.regional-counter button,.regional-shortcuts button,.regional-switch button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.regional-edit-quantity{font-size:20px!important;width:38px!important;min-width:38px!important;background:#2d547d!important;color:#e7f2ff!important;border:1px solid #638cb3!important}
+.regional-quantity-overlay{position:fixed;inset:0;z-index:999;background:#071626d9;display:flex;align-items:center;justify-content:center;padding:16px}
+.regional-quantity-dialog{width:min(100%,420px);padding:24px;border-radius:18px;background:#1a3555;border:1px solid #6086ad;box-shadow:0 24px 85px #0008;display:grid;gap:15px}
+.regional-quantity-dialog h3,.regional-quantity-dialog p{margin:0}.regional-quantity-dialog>p{color:#bcd0e9}
+.regional-quantity-dialog label{display:grid;gap:8px}.regional-quantity-dialog input{font-size:24px;min-height:54px}
+.regional-quantity-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:9px}
+@media(max-width:700px){.regional-counter>div{gap:5px}.regional-counter button{width:44px;height:49px;min-height:49px}.regional-edit-quantity{width:39px!important;min-width:39px!important}}
