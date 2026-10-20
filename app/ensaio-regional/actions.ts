@@ -43,3 +43,21 @@ export async function definirQuantidadeInstrumento(id:string,instrumento:string,
  if(error)throw Error(error.message);
  return {id:data?String(data):null};
 }
+
+export async function salvarFormularioCCB(form:FormData){
+ const db=await gerente();const id=String(form.get('ensaio_id')||'');
+ if(!uuid.test(id))throw Error('Ensaio inválido');
+ const campos=["Anciães","Diáconos","Cooperadores Oficiais","Cooperadores de Jovens e Menores","Encarregados Regionais","Examinadora","Encarregados Locais","Instrutores","Professoras","Irmãos do Dpto Musical","Irmãos/Irmãs Colaboradores (Libras, Porta, Som, Pátio, etc)"];
+ const ministerio:Record<string,number>={};
+ for(const nome of campos){
+  const valor=Number(form.get(nome)??0);
+  if(!Number.isInteger(valor)||valor<0||valor>9999)throw Error('Quantidade inválida em '+nome);
+  ministerio[nome]=valor;
+ }
+ const anciao=String(form.get('anciao')||'').trim().slice(0,120);
+ const encarregado_regional=String(form.get('encarregado_regional')||'').trim().slice(0,120);
+ const {error}=await db.from('regional_dados_formulario').upsert({ensaio_id:id,anciao,encarregado_regional,ministerio,atualizado_em:new Date().toISOString()},{onConflict:'ensaio_id'});
+ if(error)throw Error(error.message);
+ revalidatePath('/ensaio-regional');
+ return {ok:true};
+}
