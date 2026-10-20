@@ -11,6 +11,11 @@ export default function EnsaioRegionalDemo(){
  const [registros,setRegistros]=useState<Registro[]>([]);
  const [customCidade,setCustomCidade]=useState('');
  const [confirmarLimpeza,setConfirmarLimpeza]=useState(false);
+ const [config,setConfig]=useState(false);
+ const [nomeEvento,setNomeEvento]=useState('Ensaio Regional');
+ const [localEvento,setLocalEvento]=useState('');
+ const [dataEvento,setDataEvento]=useState('');
+ const [mostrarHistorico,setMostrarHistorico]=useState(false);
  const modo=tela==='musicos'?modoMusico:modoOrganista;
  const grupo=tela==='musicos'?'musicos':'organistas';
  const opcoes=modo==='instrumento'?instrumentos:modo==='nivel'?niveis:cidades;
@@ -21,12 +26,18 @@ export default function EnsaioRegionalDemo(){
  const add=(tipo:'cidade'|'instrumento'|'nivel',valor:string,quantidade:number)=>setRegistros(a=>[...a,{id:Date.now()+Math.random(),grupo,tipo,valor,quantidade}]);
  const totalPainel=totais.mc===totais.mi&&totais.oc===totais.on?totais.mc+totais.oc:null;
  return <div className="regional">
+ <header className="regional-hero">
+ <div><span className="regional-eyebrow">CENTRAL DE CONTAGEM MUSICAL</span><h2>{nomeEvento}</h2><p>{localEvento||'Local não informado'} {dataEvento?'• '+dataEvento:''}</p><span className="regional-demo-pill">● Prévia de interface • dados locais</span></div>
+ <button type="button" className="regional-settings-button" aria-expanded={config} onClick={()=>setConfig(v=>!v)}>⚙ Configurações</button>
+ </header>
+ {config&&<section className="card regional-settings"><div className="regional-count-head"><h3>Configurações do ensaio</h3><button type="button" className="muted-button" onClick={()=>setConfig(false)}>Fechar</button></div><p className="muted">Personalize as informações do cabeçalho para visualizar o modelo. Nesta etapa, elas não são salvas no servidor.</p><div className="regional-config-grid"><label>Nome do evento<input value={nomeEvento} onChange={e=>setNomeEvento(e.target.value)} maxLength={90}/></label><label>Congregação / Local<input value={localEvento} onChange={e=>setLocalEvento(e.target.value)} placeholder="Ex.: Central — Jaciara"/></label><label>Data<input type="date" value={dataEvento} onChange={e=>setDataEvento(e.target.value)}/></label></div><div className="regional-settings-info"><strong>Fluxo das equipes</strong><p><b>Equipe A:</b> cidades na entrada; instrumentos após acomodação.</p><p><b>Equipe B:</b> níveis e cidades das organistas na entrada, em contagens independentes.</p></div></section>}
+ <div className="regional-shortcuts"><button type="button" onClick={()=>{setTela('musicos');setModoMusico('cidade')}}><span className="regional-shortcut-icon">♫</span><span><strong>Equipe A · Músicos</strong><small>Cidades e instrumentos</small></span><span aria-hidden="true">→</span></button><button type="button" onClick={()=>{setTela('organistas');setModoOrganista('nivel')}}><span className="regional-shortcut-icon">♬</span><span><strong>Equipe B · Organistas</strong><small>Níveis e cidades</small></span><span aria-hidden="true">→</span></button></div>
  <div className="regional-switch" role="group" aria-label="Telas do Ensaio Regional">
  <button type="button" className={tela==='painel'?'active':''} onClick={()=>setTela('painel')}>Painel geral</button>
  <button type="button" className={tela==='musicos'?'active':''} onClick={()=>setTela('musicos')}>Contagem Músicos</button>
  <button type="button" className={tela==='organistas'?'active':''} onClick={()=>setTela('organistas')}>Contagem Organistas</button>
  </div>
- <div className="regional-notice"><strong>Prévia da interface:</strong> os botões permitem simular lançamentos somente nesta tela. As contagens ainda não são salvas no Supabase nem compartilhadas em tempo real entre celulares.</div>
+ <div className="regional-notice"><strong>Modo demonstração:</strong></strong> os botões permitem simular lançamentos somente nesta tela. As contagens ainda não são salvas no Supabase nem compartilhadas em tempo real entre celulares.</div>
  {tela==='painel'?<><div className="regional-stats">
  {[['Músicos por cidade',totais.mc],['Músicos por instrumento',totais.mi],['Organistas por cidade',totais.oc],['Organistas por nível',totais.on]].map(([nome,total])=><div className="card regional-stat" key={nome}><span>{nome}</span><strong>{total}</strong></div>)}
  </div>
@@ -38,8 +49,8 @@ export default function EnsaioRegionalDemo(){
  <div className="regional-counter-grid">{opcoes.map(item=>{const valor=registros.filter(r=>r.grupo===grupo&&r.tipo===modo&&r.valor===item).reduce((s,r)=>s+r.quantidade,0);return <div className="regional-counter" key={item}><span>{item}</span><div><button type="button" aria-label={'Remover 1 de '+item} disabled={valor===0} onClick={()=>add(modo,item,-1)}>−</button><strong>{valor}</strong><button type="button" aria-label={'Adicionar 1 a '+item} onClick={()=>add(modo,item,1)}>+</button></div></div>})}</div>
  {modo==='cidade'&&<form className="regional-new-city" onSubmit={e=>{e.preventDefault();if(customCidade.trim()){add('cidade',customCidade.trim(),1);setCustomCidade('')}}}><label>Outra cidade não listada<input value={customCidade} onChange={e=>setCustomCidade(e.target.value)} placeholder="Digite a cidade" /></label><button type="submit" disabled={!customCidade.trim()}>+ Registrar cidade</button></form>}
  </section></>}
- <section className="card"><div className="regional-count-head"><h2>Últimos lançamentos nesta prévia</h2>{registros.length>0&&<button type="button" className="muted-button" onClick={()=>setConfirmarLimpeza(true)}>Limpar prévia</button>}</div>
- {registros.length===0?<p className="muted">Nenhum lançamento nesta demonstração. Escolha uma tela e use os botões + e −.</p>:<div className="regional-log">{[...registros].reverse().slice(0,10).map(r=><div key={r.id}><span>{r.grupo==='musicos'?'Músicos':'Organistas'} • {r.tipo==='cidade'?'Cidade':r.tipo==='nivel'?'Nível':'Instrumento'} • <strong>{r.valor}</strong></span><b>{r.quantidade>0?'+':''}{r.quantidade}</b></div>)}</div>}
+ <section className="card"><div className="regional-count-head"><h2>Histórico de lançamentos</h2><button type="button" className="muted-button" aria-expanded={mostrarHistorico} onClick={()=>setMostrarHistorico(v=>!v)}>{mostrarHistorico?'Ocultar':'Mostrar'}</button>{registros.length>0&&<button type="button" className="muted-button" onClick={()=>setConfirmarLimpeza(true)}>Limpar prévia</button>}</div>
+ {mostrarHistorico&&(registros.length===0?<p className="muted">Nenhum lançamento nesta demonstração. Escolha uma tela e use os botões + e −.</p>:<div className="regional-log">{[...registros].reverse().slice(0,10).map(r=><div key={r.id}><span>{r.grupo==='musicos'?'Músicos':'Organistas'} • {r.tipo==='cidade'?'Cidade':r.tipo==='nivel'?'Nível':'Instrumento'} • <strong>{r.valor}</strong></span><b>{r.quantidade>0?'+':''}{r.quantidade}</b></div>)}</div>)}
  {confirmarLimpeza&&<div className="regional-confirm"><p>Limpar todos os números desta demonstração?</p><button type="button" onClick={()=>{setRegistros([]);setConfirmarLimpeza(false)}}>Confirmar</button><button type="button" className="muted-button" onClick={()=>setConfirmarLimpeza(false)}>Cancelar</button></div>}
  </section>
  <p className="muted">Próxima etapa: salvar os contadores no Supabase em tempo real e conectar o formulário PDF que será enviado.</p>
