@@ -35,3 +35,11 @@ export async function zerarContagensRegional(id:string){
  revalidatePath('/ensaio-regional');
  return {apagadas:Number(data||0)};
 }
+
+export async function definirQuantidadeInstrumento(id:string,instrumento:string,total:number){
+ const {db}=await auth();
+ if(!uuid.test(id)||!Number.isInteger(total)||total<0||total>9999||!instrumento.trim())throw Error('Quantidade inválida.');
+ const {data,error}=await db.rpc('regional_definir_quantidade',{p_ensaio:id,p_grupo:'musicos',p_tipo:'instrumento',p_valor:instrumento,p_total:total});
+ if(error)throw Error(error.message);
+ return {id:data?String(data):null};
+}
