@@ -511,3 +511,36 @@ body:has(.ccb-document) .topbar{display:none!important}
  body:has(.ccb-document) .ccb-form-table tbody tr:nth-child(14) td:nth-child(2){font-size:7.7pt!important}
  body:has(.ccb-document) .ccb-footnote{font-size:8pt!important}
 }
+
+/* FORMULÁRIO CCB — escala vetorial estável, página A4 595.32x841.92 pt */
+body:has(.ccb-document) .ccb-paper.ccb-original-container{
+ display:block!important;box-sizing:border-box!important;
+ width:595.32pt!important;min-width:595.32pt!important;max-width:595.32pt!important;
+ padding:0!important;margin:0 auto!important;overflow:visible!important;
+ grid-template-columns:none!important;gap:0!important;background:#fff!important;
+}
+.ccb-original-container .ccb-original-svg{
+ display:block!important;box-sizing:border-box!important;
+ width:595.32pt!important;height:841.92pt!important;
+ max-width:none!important;min-width:595.32pt!important;
+ font-family:Calibri,Carlito,Arial,sans-serif;
+}
+@media(max-width:850px){
+ body:has(.ccb-document) .ccb-paper.ccb-original-container{margin:0!important}
+}
+@media print{
+ @page{size:A4 portrait;margin:0}
+ html:has(.ccb-document),body:has(.ccb-document){padding:0!important;margin:0!important;width:595.32pt!important;background:#fff!important}
+ body:has(.ccb-document) .ccb-document{width:595.32pt!important;max-width:none!important;min-width:595.32pt!important;padding:0!important;margin:0!important;overflow:visible!important}
+ body:has(.ccb-document) .ccb-paper.ccb-original-container{
+  display:block!important;width:595.32pt!important;min-width:595.32pt!important;
+  height:841.92pt!important;padding:0!important;margin:0!important;
+  box-shadow:none!important;border:0!important;overflow:visible!important;
+  break-inside:avoid!important;
+ }
+ body:has(.ccb-document) .ccb-original-container .ccb-original-svg{
+  display:block!important;width:595.32pt!important;height:841.92pt!important;
+  max-width:none!important;min-width:595.32pt!important;
+  break-inside:avoid!important;page-break-inside:avoid!important;
+ }
+}
