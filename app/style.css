@@ -390,3 +390,44 @@ body:has(.login-shell) .topbar nav,body:has(.login-shell) .global-logout-form{di
 .regional-quantity-dialog label{display:grid;gap:8px}.regional-quantity-dialog input{font-size:24px;min-height:54px}
 .regional-quantity-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:9px}
 @media(max-width:700px){.regional-counter>div{gap:5px}.regional-counter button{width:44px;height:49px;min-height:49px}.regional-edit-quantity{width:39px!important;min-width:39px!important}}
+
+/* Relatório separado do painel de contagem */
+body:has(.regional-document) .topbar{display:none!important}
+body:has(.regional-document){background:#e6ebf1!important;color:#1b2939!important}
+.regional-document{max-width:960px;margin:0 auto;padding:28px 16px 60px;color:#182b42}
+.rd-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px;font-size:13px}
+.rd-toolbar a{color:#244971;text-decoration:none;font-weight:700}.rd-toolbar span{color:#4b6077}
+.rd-toolbar button{border-radius:10px;padding:12px 18px;background:#173b63;color:white;box-shadow:none}
+.rd-paper{background:#fff;padding:36px 42px;border-radius:8px;box-shadow:0 15px 50px #23364c22}
+.rd-head{border-bottom:2px solid #173b63;padding-bottom:22px}
+.rd-kicker{font-size:10px;letter-spacing:2px;color:#47607a;font-weight:800}
+.rd-head h1{color:#193858!important;font-size:30px;margin:11px 0 5px;line-height:1.2}
+.rd-head>p{color:#596b80;font-size:14px;margin:0 0 20px}
+.rd-meta{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+.rd-meta span{display:grid;font-size:12px;color:#213b53}.rd-meta strong{font-size:10px;letter-spacing:.7px;text-transform:uppercase;color:#688098;margin-bottom:3px}
+.rd-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin:23px 0}
+.rd-cards>div{border:1px solid #d7e0ec;background:#f2f6fa;padding:17px 15px;border-radius:8px;display:grid;gap:7px}
+.rd-cards small{color:#516a84;font-size:10px;font-weight:800}.rd-cards strong{font-size:29px;color:#143756}
+.rd-validation{display:grid;gap:5px;padding:13px;border-radius:7px;font-size:12px;margin-bottom:25px}
+.rd-valid{background:#eaf6ed;border:1px solid #b2dcc0;color:#1a663a}
+.rd-alert{background:#fff2dc;border:1px solid #e4c188;color:#7b5215}
+.rd-section{margin-top:22px;break-inside:avoid-page}
+.rd-section h2{color:#183c5f!important;font-size:15px;margin:0 0 9px;border-bottom:1px solid #c9d6e4;padding-bottom:7px}
+.rd-section table{border-collapse:collapse;width:100%;font-size:12px;table-layout:fixed}
+.rd-section th,.rd-section td{border-bottom:1px solid #e2e8ef;text-align:left;padding:5px 9px;color:#283d51!important;background:transparent!important}
+.rd-section th{background:#eff4f9!important;color:#34526e!important;font-size:10px;text-transform:uppercase}
+.rd-section th:last-child,.rd-section td:last-child{width:110px;text-align:right;font-variant-numeric:tabular-nums}
+.rd-section tr{break-inside:avoid}.rd-section .rd-total td{font-weight:800;color:#173b63!important;background:#edf3f8!important;border-top:1px solid #bfcfe0}
+.rd-official{display:flex;gap:14px;flex-wrap:wrap;padding:14px;border:1px solid #c6d4e2;border-radius:6px;margin-top:22px;font-size:12px;color:#1d3d5b}
+.rd-official strong{width:100%;font-size:11px;letter-spacing:.9px}
+.rd-footer{border-top:1px solid #cbd7e4;margin-top:25px;padding-top:12px;font-size:10px;line-height:1.5;color:#67788a}
+@media(max-width:650px){.rd-paper{padding:23px 17px}.rd-head h1{font-size:23px}.rd-meta{grid-template-columns:1fr 1fr}.rd-cards{gap:6px}.rd-cards>div{padding:11px 8px}.rd-cards strong{font-size:22px}.rd-cards small{font-size:9px}.regional-document{padding:15px 9px 45px}}
+@media print{
+ @page{size:A4 portrait;margin:13mm}
+ html:has(.regional-document),body:has(.regional-document){background:#fff!important;color:#182b42!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ body:has(.regional-document) .rd-toolbar{display:none!important}
+ body:has(.regional-document) .regional-document{max-width:none;padding:0;margin:0}
+ body:has(.regional-document) .rd-paper{padding:0;border-radius:0;box-shadow:none}
+ body:has(.regional-document) .rd-cards>div,body:has(.regional-document) .rd-section th,body:has(.regional-document) .rd-section .rd-total td{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .rd-section{break-inside:avoid-page}.rd-section h2{break-after:avoid}
+}
