@@ -477,3 +477,37 @@ body:has(.ccb-document) .topbar{display:none!important}
  body:has(.ccb-document) .ccb-form-table .ccb-section-title{font-size:9.5px!important;height:15px!important}
  body:has(.ccb-document) .ccb-footnote{font-size:8px!important}
 }
+
+/* Fidelidade dimensional ao PDF CCB original: A4 595.32 × 841.92 pontos.
+   Blocos originais: x=26-286 pt e x=305-565 pt; início y=28 pt. */
+.ccb-paper{box-sizing:border-box;width:595.32pt;max-width:none;min-width:595.32pt;grid-template-columns:260pt 260pt;gap:19pt;padding:28pt 0 0 26pt;align-items:start}
+.ccb-via{width:260pt;min-width:260pt}
+.ccb-form-table{width:260pt;table-layout:fixed;border:1pt solid #111}
+.ccb-form-table td{box-sizing:border-box;height:15.24pt!important;font-size:10.8pt!important;line-height:12.1pt;padding:0 2pt!important}
+.ccb-form-table th{box-sizing:border-box;padding:0!important}
+.ccb-form-table .ccb-num{width:34.8pt!important;font-size:10.8pt!important;line-height:12pt}
+.ccb-form-table .ccb-label{width:34.8pt!important;font-size:7pt!important}
+.ccb-form-table .ccb-name{font-size:10pt!important;height:15pt!important;line-height:14pt}
+.ccb-form-table .ccb-subtitle{font-size:9.5pt!important;height:14.52pt!important;line-height:14pt}
+.ccb-form-table .ccb-city{font-size:10.6pt!important;height:14.52pt!important;line-height:14pt}
+.ccb-form-table .ccb-section-title{font-size:10pt!important;height:13pt!important;line-height:12pt}
+.ccb-form-table .ccb-highlight td{background:#d9d9d9!important}
+.ccb-form-table .ccb-grand td{font-weight:800}
+.ccb-form-table tbody tr:nth-child(14) td:nth-child(2){font-size:7.7pt!important;letter-spacing:-.17pt}
+.ccb-footnote{font-size:8pt!important;margin:2.5pt 0 0}
+@media print{
+ @page{size:595.32pt 841.92pt;margin:0}
+ body:has(.ccb-document) .ccb-document{width:595.32pt!important;min-width:595.32pt!important}
+ body:has(.ccb-document) .ccb-paper{box-sizing:border-box!important;display:grid!important;width:595.32pt!important;min-width:595.32pt!important;grid-template-columns:260pt 260pt!important;gap:19pt!important;padding:28pt 0 0 26pt!important;margin:0!important}
+ body:has(.ccb-document) .ccb-via{width:260pt!important;min-width:260pt!important}
+ body:has(.ccb-document) .ccb-form-table{width:260pt!important}
+ body:has(.ccb-document) .ccb-form-table td{height:15.24pt!important;font-size:10.8pt!important;line-height:12.1pt!important;padding:0 2pt!important}
+ body:has(.ccb-document) .ccb-form-table .ccb-label{font-size:7pt!important}
+ body:has(.ccb-document) .ccb-form-table .ccb-num{width:34.8pt!important}
+ body:has(.ccb-document) .ccb-form-table .ccb-name{font-size:10pt!important;height:15pt!important}
+ body:has(.ccb-document) .ccb-form-table .ccb-subtitle{font-size:9.5pt!important;height:14.52pt!important}
+ body:has(.ccb-document) .ccb-form-table .ccb-city{font-size:10.6pt!important;height:14.52pt!important}
+ body:has(.ccb-document) .ccb-form-table .ccb-section-title{font-size:10pt!important;height:13pt!important}
+ body:has(.ccb-document) .ccb-form-table tbody tr:nth-child(14) td:nth-child(2){font-size:7.7pt!important}
+ body:has(.ccb-document) .ccb-footnote{font-size:8pt!important}
+}
