@@ -1,0 +1,27 @@
+'use server';
+import {serverDb} from '../../lib/supabase';
+import {revalidatePath} from 'next/cache';
+const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+async function auth(){const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)throw Error('Sessão expirada. Entre novamente.');return {db,user};}
+async function gerente(){const {db,user}=await auth();const {data}=await db.from('operadores').select('perfil').eq('user_id',user.id).maybeSingle();if(!['admin','secretaria'].includes(data?.perfil||''))throw Error('Somente administradores e secretaria podem configurar ensaios.');return db;}
+export async function criarRegional(form:FormData){
+ const db=await gerente();const titulo=String(form.get('titulo')||'').trim().slice(0,100);const local=String(form.get('local')||'').trim().slice(0,140);const data=String(form.get('data')||'');
+ if(!titulo||!/\d{4}-\d{2}-\d{2}/.test(data))throw Error('Informe nome e data.');
+ const {error}=await db.from('ensaios_regionais').insert({titulo,local,data});if(error)throw Error(error.message);
+ revalidatePath('/ensaio-regional');
+}
+export async function editarRegional(form:FormData){
+ const db=await gerente();const id=String(form.get('id')||'');if(!uuid.test(id))throw Error('Evento inválido.');
+ const titulo=String(form.get('titulo')||'').trim().slice(0,100);const local=String(form.get('local')||'').trim().slice(0,140);const data=String(form.get('data')||'');
+ const status=String(form.get('status')||'aberto');
+ if(!titulo||!/\d{4}-\d{2}-\d{2}/.test(data)||!['aberto','finalizado'].includes(status))throw Error('Dados inválidos.');
+ const {error}=await db.from('ensaios_regionais').update({titulo,local,data,status}).eq('id',id);if(error)throw Error(error.message);
+ revalidatePath('/ensaio-regional');
+}
+export async function registrarRegional(id:string,grupo:string,tipo:string,valor:string,delta:number){
+ const {db}=await auth();
+ if(!uuid.test(id)||!['musicos','organistas'].includes(grupo)||!['cidade','instrumento','nivel'].includes(tipo)||![1,-1].includes(delta))throw Error('Contagem inválida.');
+ const {error}=await db.rpc('regional_registrar',{p_ensaio:id,p_grupo:grupo,p_tipo:tipo,p_valor:valor,p_delta:delta});
+ if(error)throw Error(error.message);
+ return {ok:true};
+}
