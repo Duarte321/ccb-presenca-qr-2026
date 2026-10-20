@@ -25,3 +25,13 @@ export async function registrarRegional(id:string,grupo:string,tipo:string,valor
  if(error)throw Error(error.message);
  return {id:String(data)};
 }
+
+export async function zerarContagensRegional(id:string){
+ await gerente();
+ if(!uuid.test(id))throw Error('Ensaio inválido.');
+ const {db}=await auth();
+ const {data,error}=await db.rpc('regional_zerar_contagens',{p_ensaio:id});
+ if(error)throw Error(error.message);
+ revalidatePath('/ensaio-regional');
+ return {apagadas:Number(data||0)};
+}
