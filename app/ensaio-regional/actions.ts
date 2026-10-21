@@ -61,3 +61,17 @@ export async function salvarFormularioCCB(form:FormData){
  revalidatePath('/ensaio-regional');
  return {ok:true};
 }
+
+/** Reenvio idempotente: uma mesma identificação local nunca gera duas presenças. */
+export async function registrarRegionalOffline(lancamentoId:string,ensaioId:string,versao:number,grupo:string,tipo:string,valor:string,delta:number){
+ const {db}=await auth();
+ if(!uuid.test(lancamentoId)||!uuid.test(ensaioId)||!Number.isInteger(versao)||versao<1||
+  !['musicos','organistas'].includes(grupo)||!['cidade','instrumento','nivel'].includes(tipo)||![1,-1].includes(delta)||
+  !valor.trim()||valor.length>120)throw Error('Lançamento offline inválido.');
+ const {data,error}=await db.rpc('regional_registrar_fila',{
+  p_lancamento:lancamentoId,p_ensaio:ensaioId,p_versao:versao,
+  p_grupo:grupo,p_tipo:tipo,p_valor:valor,p_delta:delta
+ });
+ if(error)throw Error(error.message);
+ return {id:String(data)};
+}
