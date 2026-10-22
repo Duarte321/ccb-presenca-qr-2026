@@ -591,3 +591,16 @@ body:has(.ccb-document) .ccb-paper.ccb-original-container{
 @keyframes ccb-toast-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:700px){.ccb-toast{bottom:calc(78px + env(safe-area-inset-bottom,0px));left:14px;right:14px;width:auto;max-width:none;padding:13px}}
 @media print{.ccb-toast{display:none!important}}
+
+/* Abas liberadas por usuário: organização clara no Gerenciar usuários */
+.permissoes-usuario{display:grid;gap:10px;width:100%;margin-top:12px;padding:14px;border:1px solid #395b7d;border-radius:13px;background:#11253e}
+.permissoes-titulo{font-size:13px;color:#e8f3ff}
+.permissoes-presets{display:flex;gap:8px;flex-wrap:wrap}
+.permissoes-presets button{font-size:12px;padding:8px 12px;min-height:39px}
+.permissoes-form{display:grid;gap:12px}
+.permissoes-abas{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.permissao-opcao{display:flex!important;align-items:center;gap:9px;padding:10px;border:1px solid #3f5a7c;border-radius:9px;background:#192f4d;font-size:12px;cursor:pointer}
+.permissao-opcao input{width:18px!important;height:18px!important;flex:none;accent-color:#4da4ff;margin:0!important;padding:0!important}
+.permissoes-form>button{justify-self:start;min-height:42px;padding:10px 15px}
+.permissoes-form p{margin:0;font-size:12px}
+@media(max-width:680px){.permissoes-abas{grid-template-columns:1fr}.permissoes-usuario{padding:11px}.permissoes-form>button{width:100%}}
