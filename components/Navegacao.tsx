@@ -12,6 +12,15 @@ export default function Navegacao(){
  const [mais,setMais]=useState(false);
  const [modulos,setModulos]=useState<string[]|null>(null);
  useEffect(()=>{setDestino(null);setMais(false)},[pathname]);
+ useEffect(()=>{
+  if(pathname==='/login')return;
+  let ativo=true;
+  const db=createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
+  void db.rpc('meus_modulos').then(({data,error})=>{
+   if(ativo)setModulos(!error&&Array.isArray(data)?data:[]);
+  }).catch(()=>{if(ativo)setModulos([])});
+  return()=>{ativo=false};
+ },[pathname]);
  if(pathname==='/login')return null;
  const visiveis=paginas.filter(([href])=>modulos?.includes(href==='/'?'painel':href.slice(1)));
  const atalhosVisiveis=atalhos.filter(([href])=>modulos?.includes(href==='/'?'painel':href.slice(1)));
