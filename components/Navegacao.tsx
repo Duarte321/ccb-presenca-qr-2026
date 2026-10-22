@@ -14,10 +14,10 @@ export default function Navegacao(){
  const ir=(href:string)=>{setMais(false);if(href!==pathname)setDestino(href)};
  return <>
  <nav className="desktop-nav" aria-label="Navegação principal">
- {paginas.map(([href,nome])=><Link key={href} href={href} prefetch={true} aria-current={pathname===href?'page':undefined} className={pathname===href?'nav-active':destino===href?'nav-loading':''} onClick={()=>ir(href)}>{nome}{destino===href&&pathname!==href?<span className="nav-spinner" aria-label="Carregando"/>:null}</Link>)}
+ {paginas.map(([href,nome])=><Link key={href} href={href} prefetch={href==='/'||href==='/eventos'} aria-current={pathname===href?'page':undefined} className={pathname===href?'nav-active':destino===href?'nav-loading':''} onClick={()=>ir(href)}>{nome}{destino===href&&pathname!==href?<span className="nav-spinner" aria-label="Carregando"/>:null}</Link>)}
  </nav>
  <nav className="mobile-bottom-nav" aria-label="Navegação rápida">
- {atalhos.map(([href,nome,icone])=><Link key={href} href={href} prefetch={true} aria-current={pathname===href?'page':undefined} className={'mobile-nav-item '+(pathname===href?'selected':'')} onClick={()=>ir(href)}><span className="mobile-nav-icon" aria-hidden="true">{icone}</span><span>{nome}</span></Link>)}
+ {atalhos.map(([href,nome,icone])=><Link key={href} href={href} prefetch={href==='/'||href==='/eventos'} aria-current={pathname===href?'page':undefined} className={'mobile-nav-item '+(pathname===href?'selected':'')} onClick={()=>ir(href)}><span className="mobile-nav-icon" aria-hidden="true">{icone}</span><span>{nome}</span></Link>)}
  <button type="button" className={'mobile-nav-item mobile-more-button '+(mais||['/relatorios','/ensaio-regional','/usuarios','/minha-conta'].some(href=>pathname.startsWith(href))?'selected':'')} aria-expanded={mais} aria-controls="mobile-more-panel" onClick={()=>setMais(v=>!v)}><span className="mobile-nav-icon" aria-hidden="true">☰</span><span>Mais</span></button>
  </nav>
  {mais&&<><button className="mobile-menu-backdrop" type="button" aria-label="Fechar menu" onClick={()=>setMais(false)}/><div id="mobile-more-panel" className="mobile-more-panel" role="dialog" aria-label="Mais opções"><strong>Mais opções</strong>{paginas.slice(4).map(([href,nome])=><Link href={href} key={href} onClick={()=>ir(href)} aria-current={pathname===href?'page':undefined}>{nome}</Link>)}<form action={logout}><button type="submit" className="mobile-logout">Sair da conta</button></form></div></>}
