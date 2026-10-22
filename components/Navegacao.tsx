@@ -2,7 +2,6 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect,useState} from 'react';
-import {createBrowserClient} from '@supabase/ssr';
 import {logout} from '../app/actions';
 const paginas=[['/','Painel'],['/participantes','Participantes'],['/eventos','Eventos'],['/portaria','Portaria'],['/relatorios','Relatórios'],['/ensaio-regional','Ensaio Regional'],['/usuarios','Usuários'],['/minha-conta','Minha conta']] as const;
 const atalhos=[['/','Painel','⌂'],['/participantes','Pessoas','♙'],['/eventos','Eventos','▦'],['/portaria','Portaria','▣']] as const;
@@ -15,10 +14,10 @@ export default function Navegacao(){
  useEffect(()=>{
   if(pathname==='/login')return;
   let ativo=true;
-  const db=createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!);
-  void db.rpc('meus_modulos').then(({data,error})=>{
-   if(ativo)setModulos(!error&&Array.isArray(data)?data:[]);
-  }).catch(()=>{if(ativo)setModulos([])});
+  void fetch('/api/meus-modulos',{cache:'no-store'})
+   .then(async resposta=>{if(!resposta.ok)throw Error('Sem autorização');return resposta.json()})
+   .then((dados:{modulos:string[]})=>{if(ativo)setModulos(Array.isArray(dados.modulos)?dados.modulos:[])})
+   .catch(()=>{if(ativo)setModulos([])});
   return()=>{ativo=false};
  },[pathname]);
  if(pathname==='/login')return null;
