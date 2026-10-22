@@ -1,3 +1,4 @@
+import {exigirModulo} from '../../../../lib/acesso';
 import Link from 'next/link';
 import {redirect,notFound} from 'next/navigation';
 import {serverDb} from '../../../../lib/supabase';
@@ -5,6 +6,7 @@ import SelecionarEsperados from '../../../../components/SelecionarEsperados';
 export default async function Esperados({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const db=await serverDb();
  const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ await exigirModulo(db,user.id,'eventos');
  const [{data:op},{data:evento},{data:pessoas},{data:esperados},{data:presencas}]=await Promise.all([
  db.from('operadores').select('perfil').eq('user_id',user.id).single(),
  db.from('eventos').select('id,titulo,local,aberto,inicio').eq('id',id).maybeSingle(),
