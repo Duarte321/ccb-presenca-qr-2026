@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function SemAcesso(){return <main className="login-shell"><section className="card login-card"><span className="eyebrow">ACESSO RESTRITO</span><h1>Nenhuma aba liberada</h1><p>Esta conta ainda não recebeu autorização para acessar os módulos do sistema. Procure o administrador para configurar suas permissões.</p><Link className="action-link" href="/login">Voltar ao login</Link></section></main>}
