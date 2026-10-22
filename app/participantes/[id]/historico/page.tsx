@@ -1,8 +1,10 @@
+import {exigirModulo} from '../../../../lib/acesso';
 import Link from 'next/link';
 import {redirect,notFound} from 'next/navigation';
 import {serverDb} from '../../../../lib/supabase';
 export default async function Historico({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ await exigirModulo(db,user.id,'participantes');
  const [{data:pessoa},{data:esperados},{data:presencas}]=await Promise.all([
  db.from('participantes').select('id,nome,congregacao,categoria,cargo_ministerio,instrumento').eq('id',id).maybeSingle(),
  db.from('presencas_esperadas').select('evento_id,eventos(id,titulo,local,inicio,aberto)').eq('participante_id',id).limit(1000),
