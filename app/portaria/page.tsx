@@ -1,10 +1,15 @@
 import Link from 'next/link';import {serverDb} from '../../lib/supabase';import {redirect} from 'next/navigation';import Scanner from '../../components/Scanner';import RemoverPresenca from '../../components/RemoverPresenca';import PresencaManual from '../../components/PresencaManual';import Atualizador from '../../components/Atualizador';
 export default async function Portaria({searchParams}:{searchParams:Promise<{evento?:string}>}){
  const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
- const {data:operator}=await db.from('operadores').select('perfil').eq('user_id',user.id).single();const podeRemover=['admin','secretaria'].includes(operator?.perfil||'');
- const {data:ev}=await db.from('eventos').select('id,titulo,local,aberto').order('inicio',{ascending:false}).limit(100);
- const selected=(await searchParams).evento||ev?.find(e=>e.aberto)?.id||ev?.[0]?.id;const current=ev?.find(e=>e.id===selected);
- const {data:pessoas}=await db.from('participantes').select('id,nome,congregacao,instrumento').eq('ativo',true).order('nome').limit(1000);
+ const [{data:operator},{data:ev},{data:pessoas},params]=await Promise.all([
+  db.from('operadores').select('perfil').eq('user_id',user.id).single(),
+  db.from('eventos').select('id,titulo,local,aberto').order('inicio',{ascending:false}).limit(100),
+  db.from('participantes').select('id,nome,congregacao,instrumento').eq('ativo',true).order('nome').limit(1000),
+  searchParams
+ ]);
+ const podeRemover=['admin','secretaria'].includes(operator?.perfil||'');
+ const selected=params.evento||ev?.find(e=>e.aberto)?.id||ev?.[0]?.id;
+ const current=ev?.find(e=>e.id===selected);
  const {data:presencas}=current?await db.from('presencas').select('id,registrado_em,participantes(nome,categoria,congregacao)').eq('evento_id',current.id).order('registrado_em',{ascending:false}).limit(100):{data:[]};
  return <main><span className="eyebrow">PORTARIA • QR CODE</span><h1>Registrar presença</h1><p className="subtitle">Selecione uma reunião, leia o QR individual e confira a confirmação na tela.</p>
  {!current?<div className="empty">Nenhum evento disponível. <Link href="/eventos">Cadastre um evento →</Link></div>:
