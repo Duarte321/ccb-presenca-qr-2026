@@ -1,16 +1,27 @@
 import Link from 'next/link';import {serverDb} from '../../lib/supabase';import {redirect} from 'next/navigation';import Relatorio from '../../components/Relatorio';import RelatorioGeral from '../../components/RelatorioGeral';
 export default async function Relatorios({searchParams}:{searchParams:Promise<{evento?:string;participante?:string}>}){
- const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
- const {data:events}=await db.from('eventos').select('id,titulo,local,inicio,aberto').order('inicio',{ascending:false}).limit(100);
- const query=await searchParams;const current=events?.find(e=>e.id===query.evento)||events?.[0];
- const {data:rows}=current?await db.from('presencas').select('id,participante_id,registrado_em,participantes(nome,congregacao,categoria,instrumento,cargo_ministerio)').eq('evento_id',current.id).order('registrado_em',{ascending:true}).limit(3000):{data:[]};
- const formatted=(rows||[]).map((r:any)=>({id:r.id,participante_id:r.participante_id,registrado_em:r.registrado_em,nome:r.participantes?.nome||'Não encontrado',congregacao:r.participantes?.congregacao||'—',categoria:r.participantes?.categoria||'Outro',instrumento:r.participantes?.instrumento||'',cargo_ministerio:r.participantes?.cargo_ministerio||''}));
- const {data:pessoas}=await db.from('participantes').select('id,nome,congregacao').order('nome').limit(1000);
+
+ const db=await serverDb();
+ const {data:{user}}=await db.auth.getUser();
+ if(!user)redirect('/login');
+ // Consultas independentes simultâneas para reduzir a espera ao entrar em Relatórios.
+ const [query,{data:events},{data:pessoas},{data:op},{data:allPeople},{data:allPresence},{data:allExpected}]=await Promise.all([
+  searchParams,
+  db.from('eventos').select('id,titulo,local,inicio,aberto').order('inicio',{ascending:false}).limit(100),
+  db.from('participantes').select('id,nome,congregacao').order('nome').limit(1000),
+  db.from('operadores').select('perfil').eq('user_id',user.id).single(),
+  db.from('participantes').select('id,nome,congregacao,categoria,cargo_ministerio').order('nome').limit(2000),
+  db.from('presencas').select('evento_id,participante_id').limit(20000),
+  db.from('presencas_esperadas').select('evento_id,participante_id').limit(20000)
+ ]);
+ const current=events?.find(e=>e.id===query.evento)||events?.[0];
  const chosen=(pessoas||[]).find(p=>p.id===query.participante);
- const {data:historico}=chosen?await db.from('presencas').select('registrado_em,eventos(titulo,local,inicio)').eq('participante_id',chosen.id).order('registrado_em',{ascending:false}).limit(300):{data:[]};
- const {data:op}=await db.from('operadores').select('perfil').eq('user_id',user.id).single();
- const {data:logs}=['admin','secretaria'].includes(op?.perfil||'')?await db.from('auditoria_presencas').select('id,acao,ocorrido_em,detalhes').order('ocorrido_em',{ascending:false}).limit(60):{data:[]};
- const [{data:allPeople},{data:allPresence},{data:allExpected}]=await Promise.all([db.from('participantes').select('id,nome,congregacao,categoria,cargo_ministerio').order('nome').limit(2000),db.from('presencas').select('evento_id,participante_id').limit(20000),db.from('presencas_esperadas').select('evento_id,participante_id').limit(20000)]);
+ const [{data:rows},{data:historico},{data:logs}]=await Promise.all([
+  current?db.from('presencas').select('id,participante_id,registrado_em,participantes(nome,congregacao,categoria,instrumento,cargo_ministerio)').eq('evento_id',current.id).order('registrado_em',{ascending:true}).limit(3000):Promise.resolve({data:[]}),
+  chosen?db.from('presencas').select('registrado_em,eventos(titulo,local,inicio)').eq('participante_id',chosen.id).order('registrado_em',{ascending:false}).limit(300):Promise.resolve({data:[]}),
+  ['admin','secretaria'].includes(op?.perfil||'')?db.from('auditoria_presencas').select('id,acao,ocorrido_em,detalhes').order('ocorrido_em',{ascending:false}).limit(60):Promise.resolve({data:[]})
+ ]);
+ const formatted=(rows||[]).map((r:any)=>({id:r.id,participante_id:r.participante_id,registrado_em:r.registrado_em,nome:r.participantes?.nome||'Não encontrado',congregacao:r.participantes?.congregacao||'—',categoria:r.participantes?.categoria||'Outro',instrumento:r.participantes?.instrumento||'',cargo_ministerio:r.participantes?.cargo_ministerio||''}));
  return <main><span className="eyebrow">RELATÓRIOS E HISTÓRICO</span><h1>Resumo musical</h1><p className="subtitle">Presenças confirmadas e distribuição musical por evento.</p>
  <RelatorioGeral eventos={events||[]} pessoas={allPeople||[]} presencas={allPresence||[]} esperados={allExpected||[]}/><section className="report-event-links">{(events||[]).map(e=><Link href={'/relatorios?evento='+e.id} key={e.id} className={'event-link '+(current?.id===e.id?'selected':'')}>{e.titulo} • {e.local}</Link>)}</section>
  {current?<Relatorio titulo={current.titulo} local={current.local} inicio={current.inicio} presencas={formatted}/>:<div className="empty">Crie um evento para gerar relatórios.</div>}
