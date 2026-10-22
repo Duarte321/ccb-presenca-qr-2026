@@ -2,6 +2,7 @@ import {redirect,notFound} from 'next/navigation';
 import {serverDb} from '../../../../lib/supabase';
 import {salvarFormularioCCB} from '../../actions';
 import RegionalPrintButton from '../../../../components/RegionalPrintButton';
+import FormConfirmacao from '../../../../components/FormConfirmacao';
 import CcbFolhaOriginal from '../../../../components/CcbFolhaOriginal';
 export const dynamic='force-dynamic';
 type Contagem={grupo:string;tipo:string;valor:string;quantidade:number};
@@ -27,7 +28,7 @@ export default async function FormularioCCB({params}:{params:Promise<{id:string}
  return <main className="ccb-document">
  <div className="ccb-controls"><a href="/ensaio-regional">← Ensaio Regional</a><div><h1>Gerar PDF CCB</h1><p>Folha A4 com duas vias no formato do modelo original.</p></div><RegionalPrintButton/></div>
  {!okM||!okO?<p className="ccb-alert">Atenção: as contagens ainda têm diferenças entre cidades, instrumentos ou níveis. Confira antes de imprimir.</p>:null}
- {podeGerenciar&&<details className="ccb-editor" open={!dados}><summary>✎ Preencher ancião, encarregado regional e ministério</summary><form action={async form=>{'use server';await salvarFormularioCCB(form)}}><input type="hidden" name="ensaio_id" value={id}/><div className="ccb-editor-grid"><label>Ancião<input name="anciao" defaultValue={valor.anciao} placeholder="Nome do ancião"/></label><label>Encarregado Regional<input name="encarregado_regional" defaultValue={valor.encarregado_regional} placeholder="Nome do encarregado regional"/></label>{ministerio.map(nome=><label key={nome}>{nome}<input type="number" inputMode="numeric" min={0} max={9999} name={nome} defaultValue={valor.ministerio[nome]||0}/></label>)}</div><button type="submit">Salvar dados do formulário</button><p>Após salvar, os dados aparecem automaticamente nas duas vias. A oficialização permanece sempre em zero.</p></form></details>}
+ {podeGerenciar&&<details className="ccb-editor" open={!dados}><summary>✎ Preencher ancião, encarregado regional e ministério</summary><FormConfirmacao action={salvarFormularioCCB} mensagemSucesso="Dados do formulário CCB salvos com sucesso!"><input type="hidden" name="ensaio_id" value={id}/><div className="ccb-editor-grid"><label>Ancião<input name="anciao" defaultValue={valor.anciao} placeholder="Nome do ancião"/></label><label>Encarregado Regional<input name="encarregado_regional" defaultValue={valor.encarregado_regional} placeholder="Nome do encarregado regional"/></label>{ministerio.map(nome=><label key={nome}>{nome}<input type="number" inputMode="numeric" min={0} max={9999} name={nome} defaultValue={valor.ministerio[nome]||0}/></label>)}</div><button type="submit">Salvar dados do formulário</button><p>Após salvar, os dados aparecem automaticamente nas duas vias. A oficialização permanece sempre em zero.</p></FormConfirmacao></details>}
  <div className="ccb-paper ccb-original-container"><CcbFolhaOriginal evento={evento} dados={valor} qt={qt} musicos={musicos} organistas={organistas}/></div>
  </main>;
 }
