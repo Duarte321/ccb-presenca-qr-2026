@@ -1,13 +1,14 @@
+import {garantirAcessoModulo} from '../../lib/acesso';
 import Link from 'next/link';import {serverDb} from '../../lib/supabase';import {redirect} from 'next/navigation';import Scanner from '../../components/Scanner';import RemoverPresenca from '../../components/RemoverPresenca';import PresencaManual from '../../components/PresencaManual';import Atualizador from '../../components/Atualizador';
 export default async function Portaria({searchParams}:{searchParams:Promise<{evento?:string}>}){
  const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
  const [{data:operator},{data:ev},{data:pessoas},params]=await Promise.all([
-  db.from('operadores').select('perfil').eq('user_id',user.id).single(),
+  db.from('operadores').select('perfil,modulos_permitidos').eq('user_id',user.id).single(),
   db.from('eventos').select('id,titulo,local,aberto').order('inicio',{ascending:false}).limit(100),
   db.from('participantes').select('id,nome,congregacao,instrumento').eq('ativo',true).order('nome').limit(1000),
   searchParams
  ]);
- const podeRemover=['admin','secretaria'].includes(operator?.perfil||'');
+garantirAcessoModulo(operator?.perfil,operator?.modulos_permitidos,'portaria'); const podeRemover=['admin','secretaria'].includes(operator?.perfil||'');
  const selected=params.evento||ev?.find(e=>e.aberto)?.id||ev?.[0]?.id;
  const current=ev?.find(e=>e.id===selected);
  const {data:presencas}=current?await db.from('presencas').select('id,registrado_em,participantes(nome,categoria,congregacao)').eq('evento_id',current.id).order('registrado_em',{ascending:false}).limit(100):{data:[]};
