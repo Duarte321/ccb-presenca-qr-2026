@@ -1,6 +1,7 @@
 'use client';
 import {useEffect,useMemo,useState,useTransition} from 'react';
 import {useRouter} from 'next/navigation';
+import {createBrowserClient} from '@supabase/ssr';
 import {criarRegional,editarRegional,zerarContagensRegional,definirQuantidadeInstrumento,atribuirResponsavelRegional,removerResponsavelRegional} from '../app/ensaio-regional/actions';
 import {useRegionalOffline,type RegionalEnsaio,type RegionalRegistro} from '../lib/useRegionalOffline';
 type Ensaio=RegionalEnsaio;
@@ -11,16 +12,41 @@ const rotulosFuncoes:Record<string,string>={musicos_cidade:'Músicos • Cidades
 const instrumentos=["Violinos","Viola","Violoncelos","Acordeon","Flautas","Oboé","Oboé d'Amore","Corne Inglês","Fagote","Clarinetes","Clarone Alto","Clarone Baixo","Saxofones Sopranos","Saxofones Altos","Saxofones Tenores","Saxofones Barítonos","Cornet","Trompetes","FlugelHorn","Trompa","Trombones","Trombonito","Barítono de pisto","Eufônios","Tubas"];
 const cidades=['Jaciara','Rondonópolis','São Pedro da Cipa','Juscimeira','Cuiabá','Campo Verde','Chapada dos Guimarães'];
 const niveis=['Oficializada','RDJ','Culto Oficial'];
-export default function Regional({ensaios,registros,podeGerenciar,operadorId,atribuicoes,usuarios}:{ensaios:Ensaio[];registros:Registro[];podeGerenciar:boolean;operadorId:string;atribuicoes:Responsavel[];usuarios:UsuarioRegional[]}){
- const router=useRouter();const [pending,transition]=useTransition();const [id,setId]=useState(ensaios[0]?.id||'');const [tela,setTela]=useState('painel');const [modoM,setModoM]=useState('cidade');const [modoO,setModoO]=useState('nivel');const [config,setConfig]=useState(false);const [erro,setErro]=useState('');const [cidadeExtra,setCidadeExtra]=useState('');const [history,setHistory]=useState(false);const [busca,setBusca]=useState('');const [confirmarZerar,setConfirmarZerar]=useState(false);const [zerando,setZerando]=useState(false);const [editando,setEditando]=useState<string|null>(null);const [quantidadeEditada,setQuantidadeEditada]=useState('');const [salvandoQuantidade,setSalvandoQuantidade]=useState(false);
+export default function Regional({ensaios,registros,podeGerenciar,operadorId,atribuicoes,usuarios,ensaioInicialId}:{ensaios:Ensaio[];registros:Registro[];podeGerenciar:boolean;operadorId:string;atribuicoes:Responsavel[];usuarios:UsuarioRegional[];ensaioInicialId:string}){
+ const router=useRouter();const [pending,transition]=useTransition();const [id,setId]=useState(ensaioInicialId);const [tela,setTela]=useState('painel');const [modoM,setModoM]=useState('cidade');const [modoO,setModoO]=useState('nivel');const [config,setConfig]=useState(false);const [erro,setErro]=useState('');const [cidadeExtra,setCidadeExtra]=useState('');const [history,setHistory]=useState(false);const [busca,setBusca]=useState('');const [confirmarZerar,setConfirmarZerar]=useState(false);const [zerando,setZerando]=useState(false);const [editando,setEditando]=useState<string|null>(null);const [quantidadeEditada,setQuantidadeEditada]=useState('');const [salvandoQuantidade,setSalvandoQuantidade]=useState(false);
 
- const offline=useRegionalOffline(operadorId,ensaios,registros);
+ const [registrosAtuais,setRegistrosAtuais]=useState(registros);
+ const [erroAtualizacao,setErroAtualizacao]=useState('');
+ const dbBrowser=useMemo(()=>createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+ ),[]);
+ useEffect(()=>{setRegistrosAtuais(registros)},[registros]);
+ useEffect(()=>{setId(ensaioInicialId)},[ensaioInicialId]);
+ const offline=useRegionalOffline(operadorId,ensaios,registrosAtuais);
  const {pronto,online,sincronizando,erroFila,pendentes,problemas,registrosEfetivos}=offline;
  const emEnvio=pendentes.length;
  useEffect(()=>{
-  const timer=setInterval(()=>{if(document.visibilityState==='visible'&&navigator.onLine)transition(()=>router.refresh())},10000);
-  return()=>clearInterval(timer);
- },[router]);
+  if(!id)return;
+  let encerrado=false,consultando=false;
+  const consultar=async()=>{
+   if(encerrado||consultando||document.visibilityState!=='visible'||!navigator.onLine)return;
+   consultando=true;
+   try{
+    const {data,error}=await dbBrowser.from('contagens_regionais')
+     .select('id,ensaio_id,grupo,tipo,valor,quantidade,criado_em,client_event_id')
+     .eq('ensaio_id',id).order('criado_em',{ascending:true}).limit(10000);
+    if(encerrado)return;
+    if(error){setErroAtualizacao('Não foi possível atualizar as contagens deste ensaio.');return}
+    setRegistrosAtuais(data||[]);setErroAtualizacao('');
+   }catch{if(!encerrado)setErroAtualizacao('Atualização indisponível. A próxima tentativa será automática.')}
+   finally{consultando=false}
+  };
+  const timer=setInterval(()=>{void consultar()},10000);
+  const foco=()=>{if(document.visibilityState==='visible')void consultar()};
+  window.addEventListener('online',foco);
+  document.addEventListener('visibilitychange',foco);
+  return()=>{encerrado=true;clearInterval(timer);window.removeEventListener('online',foco);document.removeEventListener('visibilitychange',foco)};
+ },[id,dbBrowser]);
  useEffect(()=>{if(!ensaios.some(e=>e.id===id)&&ensaios.length)setId(ensaios[0].id)},[ensaios,id]);
  const evento=ensaios.find(e=>e.id===id);
  const minhaFuncao=atribuicoes.find(r=>r.ensaio_id===id&&r.usuario_id===operadorId)?.funcao;
@@ -42,7 +68,7 @@ export default function Regional({ensaios,registros,podeGerenciar,operadorId,atr
  const sumario=(g:string,t:string)=>Object.entries(logs.filter(r=>r.grupo===g&&r.tipo===t).reduce<Record<string,number>>((a,r)=>{a[r.valor]=(a[r.valor]||0)+r.quantidade;return a},{})).filter(([,n])=>n>0).sort((a,b)=>a[0].localeCompare(b[0],'pt-BR'));
  return <div className="regional">
  <header className="regional-hero"><div><span className="regional-eyebrow">CONTAGEM MUSICAL • SINCRONIZAÇÃO AUTOMÁTICA</span><h2>{evento?.titulo||'Ensaio Regional'}</h2><p>{evento?evento.local+' • '+evento.data:'Crie um ensaio para começar'}</p><span className="regional-demo-pill">{evento?.status==='finalizado'?'● Finalizado':'● '+(!online?'SEM INTERNET • aguardando conexão':emEnvio?emEnvio+' lançamento(s) pendente(s)':'Contagem sincronizada • atualização a cada 10s')}</span></div><button className="regional-settings-button" type="button" onClick={()=>setConfig(v=>!v)}>{podeGerenciar?"⚙ Configurações":"Minha função"}</button></header>
- <div className="regional-select"><label>Ensaio em acompanhamento<select value={id} onChange={e=>{setId(e.target.value);setTela('painel');setConfirmarZerar(false)}}><option value="">Selecione um ensaio</option>{ensaios.map(e=><option key={e.id} value={e.id}>{e.titulo} — {e.data} {e.status==='finalizado'?'(finalizado)':''}</option>)}</select></label></div>
+ <div className="regional-select"><label>Ensaio em acompanhamento<select value={id} onChange={e=>{const proximo=e.target.value;setId(proximo);setTela('painel');setConfirmarZerar(false);setRegistrosAtuais([]);router.replace('/ensaio-regional?ensaio='+encodeURIComponent(proximo),{scroll:false})}}><option value="">Selecione um ensaio</option>{ensaios.map(e=><option key={e.id} value={e.id}>{e.titulo} — {e.data} {e.status==='finalizado'?'(finalizado)':''}</option>)}</select></label></div>
  {config&&<section className="card regional-settings"><h3>{podeGerenciar?"Configurações e responsáveis":"Sua função no ensaio"}</h3>{!podeGerenciar&&<p className="muted">Você está designado para: <strong>{minhaFuncao?rotulosFuncoes[minhaFuncao]:"Nenhuma função atribuída"}</strong>. Solicite à administração ou secretaria para alterar sua função.</p>}{podeGerenciar&&<form action={async form=>{setErro('');try{await criarRegional(form);router.refresh();setConfig(false)}catch(e){setErro(e instanceof Error?e.message:'Erro ao criar')}}} className="regional-config-grid"><label>Novo ensaio<input name="titulo" placeholder="Ensaio Regional" required/></label><label>Local<input name="local" placeholder="Congregação anfitriã"/></label><label>Data<input type="date" name="data" required/></label><button type="submit">Criar ensaio</button></form>}
  {evento&&podeGerenciar&&<form key={evento.id} action={async form=>{setErro('');try{await editarRegional(form);router.refresh()}catch(e){setErro(e instanceof Error?e.message:'Erro ao salvar')}}} className="regional-config-grid"><input type="hidden" name="id" value={evento.id}/><label>Título<input name="titulo" defaultValue={evento.titulo} required/></label><label>Local<input name="local" defaultValue={evento.local}/></label><label>Data<input name="data" type="date" defaultValue={evento.data} required/></label><label>Status<select name="status" defaultValue={evento.status}><option value="aberto">Aberto para contagem</option><option value="finalizado">Finalizado / bloqueado</option></select></label><button type="submit">Salvar configurações</button></form>}
  {evento&&podeGerenciar&&<div className="regional-reset-panel"><div><strong>Limpar todas as contagens deste ensaio</strong><p className="muted">Zera músicos por cidade e instrumentos/naipes e organistas por cidade e nível. Não altera outros ensaios.</p></div>{!confirmarZerar?<button type="button" className="regional-danger-button" disabled={zerando||pendentes.some(r=>r.ensaio_id===id)||problemas.some(r=>r.ensaio_id===id)||evento.status!=='aberto'} onClick={()=>setConfirmarZerar(true)}>Limpar todas as contagens</button>:<div className="regional-reset-confirm"><p>Confirma zerar as quatro contagens de <strong>{evento.titulo}</strong>? Esta ação não poderá ser desfeita.</p><button type="button" className="regional-danger-button" disabled={zerando||pendentes.some(r=>r.ensaio_id===id)||problemas.some(r=>r.ensaio_id===id)} onClick={async()=>{setZerando(true);setErro('');try{await zerarContagensRegional(evento.id);await offline.limparConfirmados();setConfirmarZerar(false);transition(()=>router.refresh())}catch(e){setErro(e instanceof Error?e.message:'Falha ao limpar contagens')}finally{setZerando(false)}}}>{zerando?'Limpando...':'Sim, zerar tudo'}</button><button type="button" className="muted-button" disabled={zerando} onClick={()=>setConfirmarZerar(false)}>Cancelar</button></div>}</div>}{podeGerenciar&&evento&&<div className="regional-team-manager">
@@ -58,6 +84,7 @@ export default function Regional({ensaios,registros,podeGerenciar,operadorId,atr
  </div>}{!podeGerenciar&&<p className="muted">Somente administração e secretaria podem criar, editar e finalizar ensaios.</p>}</section>}
  {erro&&<p className="login-error" role="alert">{erro}</p>}
  {erroFila&&<p className="login-error" role="alert">{erroFila}</p>}
+ {erroAtualizacao&&<p className="muted" role="status">{erroAtualizacao}</p>}
  <section className={'regional-offline-status '+(!online?'regional-offline-disconnected':problemas.length?'regional-offline-problems':pendentes.length?'regional-offline-waiting':'regional-offline-ready')} aria-live="polite"><div><strong>{!pronto?'Preparando contagem offline…':!online?'Sem internet — contagem salva neste celular':problemas.length?'Atenção: lançamentos precisam de revisão':pendentes.length?'Sincronização pendente':'Contagem pronta para usar'}</strong><p>{!pronto?'Aguarde para registrar com segurança.':!online?'Mantenha esta página aberta; os toques serão enviados quando a conexão voltar.':pendentes.length?pendentes.length+' lançamento(s) guardado(s) para envio.':'Os lançamentos são guardados no aparelho antes do envio ao Supabase.'}</p></div><div className="regional-offline-actions">{pendentes.length>0&&<span className="regional-offline-count">{pendentes.length} pendente(s)</span>}{sincronizando&&<span>Enviando…</span>}{online&&pendentes.length>0&&<button type="button" onClick={()=>void offline.sincronizar()}>Sincronizar agora</button>}</div></section>
  {problemas.length>0&&<section className="regional-offline-problem-list"><strong>Contagens que precisam de revisão</strong>{problemas.map(item=><div key={item.id}><span>{item.grupo==='musicos'?'Músicos':'Organistas'} · {item.valor} ({item.quantidade>0?'+1':'−1'}) — {item.erro||'Não confirmado'}</span><div><button type="button" onClick={()=>void offline.tentarNovamente(item.id)}>Tentar novamente</button><button type="button" className="muted-button" onClick={()=>{if(window.confirm('Descartar este lançamento que não foi aceito pelo servidor?'))void offline.descartar(item.id)}}>Descartar</button></div></div>)}</section>}
  {evento&&<>
