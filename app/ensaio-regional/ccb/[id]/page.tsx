@@ -1,3 +1,4 @@
+import {exigirModulo} from '../../../../lib/acesso';
 import {redirect,notFound} from 'next/navigation';
 import {serverDb} from '../../../../lib/supabase';
 import {salvarFormularioCCB} from '../../actions';
@@ -10,6 +11,7 @@ type Valores={anciao:string;encarregado_regional:string;ministerio:Record<string
 const ministerio=["Anciães","Diáconos","Cooperadores Oficiais","Cooperadores de Jovens e Menores","Encarregados Regionais","Examinadora","Encarregados Locais","Instrutores","Professoras","Irmãos do Dpto Musical","Irmãos/Irmãs Colaboradores (Libras, Porta, Som, Pátio, etc)"];
 export default async function FormularioCCB({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ await exigirModulo(db,user.id,'ensaio-regional');
  const {data:perfilRegional}=await db.from('operadores').select('perfil').eq('user_id',user.id).maybeSingle();
  if(!['admin','secretaria'].includes(perfilRegional?.perfil||''))redirect('/ensaio-regional');
  const [{data:evento},{data:registros},{data:dados},{data:op}]=await Promise.all([
