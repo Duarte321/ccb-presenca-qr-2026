@@ -48,3 +48,16 @@ export async function criarUsuarioComSenha(f:FormData){
  revalidatePath('/usuarios');
  return {ok:true,mensagem:'Usuário criado e perfil configurado. Ele já pode acessar o login com a senha inicial.'};
 }
+
+export async function salvarModulosUsuario(form:FormData){
+ const {db}=await admin();
+ const usuario=String(form.get('user_id')||'');
+ const modulos=form.getAll('modulos').map(String);
+ if(!/^[a-f0-9-]{36}$/i.test(usuario))throw Error('Usuário inválido.');
+ const validos=['painel','participantes','eventos','portaria','relatorios','ensaio-regional','minha-conta'];
+ if(modulos.length===0||modulos.some(m=>!validos.includes(m)))throw Error('Selecione ao menos uma aba permitida.');
+ const {error}=await db.rpc('definir_modulos_usuario',{p_usuario:usuario,p_modulos:modulos});
+ if(error)throw Error(error.message);
+ revalidatePath('/usuarios');
+ return {ok:true};
+}
