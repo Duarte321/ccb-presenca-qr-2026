@@ -1,3 +1,4 @@
+import {exigirModulo} from '../../../../lib/acesso';
 import {redirect,notFound} from 'next/navigation';
 import {serverDb} from '../../../../lib/supabase';
 import RegionalPrintButton from '../../../../components/RegionalPrintButton';
@@ -7,6 +8,7 @@ type Contagem={grupo:string;tipo:string;valor:string;quantidade:number};
 function tabela(titulo:string,linhas:[string,number][],total:number){return <section className="rd-section"><h2>{titulo}</h2><table><thead><tr><th>Descrição</th><th>Quantidade</th></tr></thead><tbody>{linhas.map(([nome,qt])=><tr key={nome}><td>{nome}</td><td>{qt}</td></tr>)}<tr className="rd-total"><td>Total</td><td>{total}</td></tr></tbody></table></section>}
 export default async function RelatorioRegional({params}:{params:Promise<{id:string}>}){
  const {id}=await params;const db=await serverDb();const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ await exigirModulo(db,user.id,'ensaio-regional');
  const {data:perfilRegional}=await db.from('operadores').select('perfil').eq('user_id',user.id).maybeSingle();
  if(!['admin','secretaria'].includes(perfilRegional?.perfil||''))redirect('/ensaio-regional');
  const [{data:evento,error},{data:registros,error:erroContagem}]=await Promise.all([db.from('ensaios_regionais').select('id,titulo,local,data,status').eq('id',id).maybeSingle(),db.from('contagens_regionais').select('grupo,tipo,valor,quantidade').eq('ensaio_id',id).limit(50000)]);
