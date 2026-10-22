@@ -1,3 +1,4 @@
+import {garantirAcessoModulo} from '../../lib/acesso';
 import {redirect} from 'next/navigation';
 import {serverDb} from '../../lib/supabase';
 import EnsaioRegionalLive from '../../components/EnsaioRegionalLive';
@@ -8,9 +9,10 @@ export default async function EnsaioRegional({searchParams}:{searchParams:Promis
  if(!user)redirect('/login');
  const [{data:ensaios},{data:op},{data:atribuicoes}]=await Promise.all([
   db.from('ensaios_regionais').select('id,titulo,local,data,status,contagem_versao').order('data',{ascending:false}).limit(100),
-  db.from('operadores').select('perfil').eq('user_id',user.id).maybeSingle(),
+  db.from('operadores').select('perfil,modulos_permitidos').eq('user_id',user.id).maybeSingle(),
   db.from('regional_responsaveis').select('ensaio_id,usuario_id,funcao')
  ]);
+ garantirAcessoModulo(op?.perfil,op?.modulos_permitidos,'ensaio-regional');
  const selecionado=(await searchParams).ensaio;
  const ensaioId=ensaios?.find(e=>e.id===selecionado)?.id||ensaios?.[0]?.id||'';
  const podeGerenciar=['admin','secretaria'].includes(op?.perfil||'');
