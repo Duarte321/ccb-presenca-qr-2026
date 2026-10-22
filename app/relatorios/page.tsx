@@ -1,3 +1,4 @@
+import {garantirAcessoModulo} from '../../lib/acesso';
 import Link from 'next/link';import {serverDb} from '../../lib/supabase';import {redirect} from 'next/navigation';import Relatorio from '../../components/Relatorio';import RelatorioGeral from '../../components/RelatorioGeral';
 export default async function Relatorios({searchParams}:{searchParams:Promise<{evento?:string;participante?:string}>}){
 
@@ -9,11 +10,12 @@ export default async function Relatorios({searchParams}:{searchParams:Promise<{e
   searchParams,
   db.from('eventos').select('id,titulo,local,inicio,aberto').order('inicio',{ascending:false}).limit(100),
   db.from('participantes').select('id,nome,congregacao').order('nome').limit(1000),
-  db.from('operadores').select('perfil').eq('user_id',user.id).single(),
+  db.from('operadores').select('perfil,modulos_permitidos').eq('user_id',user.id).single(),
   db.from('participantes').select('id,nome,congregacao,categoria,cargo_ministerio').order('nome').limit(2000),
   db.from('presencas').select('evento_id,participante_id').limit(20000),
   db.from('presencas_esperadas').select('evento_id,participante_id').limit(20000)
  ]);
+ garantirAcessoModulo(op?.perfil,op?.modulos_permitidos,'relatorios');
  const current=events?.find(e=>e.id===query.evento)||events?.[0];
  const chosen=(pessoas||[]).find(p=>p.id===query.participante);
  const [{data:rows},{data:historico},{data:logs}]=await Promise.all([
