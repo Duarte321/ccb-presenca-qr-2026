@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import {usePathname} from 'next/navigation';
 import {useEffect,useState} from 'react';
+import {createBrowserClient} from '@supabase/ssr';
 import {logout} from '../app/actions';
 const paginas=[['/','Painel'],['/participantes','Participantes'],['/eventos','Eventos'],['/portaria','Portaria'],['/relatorios','Relatórios'],['/ensaio-regional','Ensaio Regional'],['/usuarios','Usuários'],['/minha-conta','Minha conta']] as const;
 const atalhos=[['/','Painel','⌂'],['/participantes','Pessoas','♙'],['/eventos','Eventos','▦'],['/portaria','Portaria','▣']] as const;
@@ -9,8 +10,12 @@ export default function Navegacao(){
  const pathname=usePathname();
  const [destino,setDestino]=useState<string|null>(null);
  const [mais,setMais]=useState(false);
+ const [modulos,setModulos]=useState<string[]|null>(null);
  useEffect(()=>{setDestino(null);setMais(false)},[pathname]);
  if(pathname==='/login')return null;
+ const visiveis=paginas.filter(([href])=>modulos?.includes(href==='/'?'painel':href.slice(1)));
+ const atalhosVisiveis=atalhos.filter(([href])=>modulos?.includes(href==='/'?'painel':href.slice(1)));
+ const extras=visiveis.filter(([href])=>!atalhos.some(([a])=>a===href));
  const ir=(href:string)=>{setMais(false);if(href!==pathname)setDestino(href)};
  return <>
  <nav className="desktop-nav" aria-label="Navegação principal">
