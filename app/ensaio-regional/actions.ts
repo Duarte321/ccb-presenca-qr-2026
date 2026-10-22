@@ -75,3 +75,28 @@ export async function registrarRegionalOffline(lancamentoId:string,ensaioId:stri
  if(error)throw Error(error.message);
  return {id:String(data)};
 }
+
+const funcoesRegionais=['musicos_cidade','musicos_instrumento','organistas_cidade','organistas_nivel'];
+export async function atribuirResponsavelRegional(f:FormData){
+ const db=await gerente();
+ const ensaioId=String(f.get('ensaio_id')||'');
+ const usuarioId=String(f.get('usuario_id')||'');
+ const funcao=String(f.get('funcao')||'');
+ if(!uuid.test(ensaioId)||!uuid.test(usuarioId)||!funcoesRegionais.includes(funcao))throw Error('Selecione usuário e função válidos.');
+ const {data:usuario,error:erroUsuario}=await db.from('operadores').select('perfil').eq('user_id',usuarioId).maybeSingle();
+ if(erroUsuario||!usuario||!['consulta','porteiro'].includes(usuario.perfil))throw Error('O responsável deve ter o perfil Consulta ou Portaria em Gerenciar usuários.');
+ const {error}=await db.from('regional_responsaveis').upsert({ensaio_id:ensaioId,usuario_id:usuarioId,funcao},{onConflict:'ensaio_id,usuario_id'});
+ if(error)throw Error(error.message);
+ revalidatePath('/ensaio-regional');
+ return {ok:true};
+}
+export async function removerResponsavelRegional(f:FormData){
+ const db=await gerente();
+ const ensaioId=String(f.get('ensaio_id')||'');
+ const usuarioId=String(f.get('usuario_id')||'');
+ if(!uuid.test(ensaioId)||!uuid.test(usuarioId))throw Error('Responsável inválido.');
+ const {error}=await db.from('regional_responsaveis').delete().eq('ensaio_id',ensaioId).eq('usuario_id',usuarioId);
+ if(error)throw Error(error.message);
+ revalidatePath('/ensaio-regional');
+ return {ok:true};
+}
