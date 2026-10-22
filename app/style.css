@@ -579,3 +579,15 @@ body:has(.ccb-document) .ccb-paper.ccb-original-container{
 .regional-role-summary strong{color:#e0f7e8}
 .regional-role-summary span{color:#c4e4d1;font-size:12px}
 @media(max-width:680px){.regional-team-manager{padding:12px}.regional-team-form{display:grid}.regional-team-form label{width:100%}.regional-team-form button{width:100%}.regional-team-item{align-items:start}}
+
+/* Mensagens padronizadas de confirmação de operações */
+.ccb-toast{position:fixed;right:22px;bottom:24px;z-index:100000;display:flex;align-items:flex-start;gap:12px;width:min(440px,calc(100vw - 28px));max-width:440px;padding:15px 15px;border:1px solid #3c7d69;border-radius:15px;background:#153d34;color:#f3fff9;box-shadow:0 16px 44px #0009;animation:ccb-toast-in .2s ease-out}
+.ccb-toast-icon{flex:none;display:grid;place-items:center;border-radius:50%;width:29px;height:29px;background:#25835d;color:#fff;font-weight:900;font-size:18px}
+.ccb-toast-body{flex:1;min-width:0}.ccb-toast-body strong{display:block;font-size:14px}.ccb-toast-body p{margin:2px 0 0;color:#daeee6;font-size:13px;overflow-wrap:anywhere}
+.ccb-toast>button{flex:none;display:grid;place-items:center;width:32px;height:32px;padding:0;color:inherit;background:transparent;box-shadow:none;border:0;border-radius:7px;font-size:23px}
+.ccb-toast-erro{background:#51262f;border-color:#d37b86}.ccb-toast-erro .ccb-toast-icon{background:#b54552}.ccb-toast-erro .ccb-toast-body p{color:#ffe4e8}
+.ccb-toast-info{background:#183b5a;border-color:#619cd1}.ccb-toast-info .ccb-toast-icon{background:#3276b3}
+.ccb-form-saving{margin:0;color:#b9dafe;font-size:12px}
+@keyframes ccb-toast-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:700px){.ccb-toast{bottom:calc(78px + env(safe-area-inset-bottom,0px));left:14px;right:14px;width:auto;max-width:none;padding:13px}}
+@media print{.ccb-toast{display:none!important}}
